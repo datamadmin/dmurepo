@@ -112,7 +112,8 @@ public class DmuConnectionService {
 			}
 			if (DmuConstants.HDFS.equalsIgnoreCase(connectionDto.getConnectionGroup())) {
 				dmuHelperService.saveDMUHdfsEntityProperties(connectionDto);
-				hdfsConnectionService.initDataSourceConfig();
+				dmuHelperService.saveDMUAuthenticationProperties(connectionDto);
+				//hdfsConnectionService.initDataSourceConfig();
 			}
 			if (DmuConstants.TARGET_FILE_PROPS.equalsIgnoreCase(connectionDto.getConnectionGroup())) {
 				dmuHelperService.saveTGTFormatProperties(connectionDto);
@@ -122,6 +123,9 @@ public class DmuConnectionService {
 			}
 			dmuHelperService.init();
 		} catch (Exception exception) {
+			
+			
+			
 			log.info(" Exception occured at ConnectionService :: saveConnectionDetails ::   {} ",
 					ExceptionUtils.getStackTrace(exception));
 			throw new DataMigrationException("Exception while saving connection properties ");
@@ -139,6 +143,7 @@ public class DmuConnectionService {
 			dmuHelperService.populateDMUAuthenticationProperties(connectionDto);
 			dmuHelperService.populateTGTFormatProperties(connectionDto);
 			dmuHelperService.populateTGTOtherProperties(connectionDto);
+			System.out.println("HDFSdomain"+connectionDto.getHdfsLdapDomain());
 			return connectionDto;
 		} catch (Exception exception) {
 			log.info(" Exception occured at ConnectionService :: getConnectionDetails {} ",

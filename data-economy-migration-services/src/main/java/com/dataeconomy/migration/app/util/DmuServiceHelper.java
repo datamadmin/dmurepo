@@ -171,7 +171,7 @@ public class DmuServiceHelper {
 	}
 
 
-	
+
 	public void saveTGTFormatProperties(DmuConnectionDTO connectionDto) {
 		if (connectionDto.getTgtFormatPropTempDto() != null) {
 			DmuTgtFormatPropTempDTO tgtFormatPropObj = connectionDto.getTgtFormatPropTempDto();
@@ -223,7 +223,6 @@ public class DmuServiceHelper {
 				} else {
 					tgtFormatPropEntity.setSrcCmprsnFlag(DmuConstants.NO);
 				}
-				System.out.println("**Compressiontype***" + tgtFormatPropObj.getCompressionType());
 				tgtFormatPropRepository.save(tgtFormatPropEntity);
 			}
 		}
@@ -321,9 +320,42 @@ public class DmuServiceHelper {
 		if (dmuAuthentication.isPresent()) {
 			DmuAuthenticationEntity dmuAuthenticationObj = dmuAuthentication.get();
 			connectionDto.setAuthenticationType(dmuAuthenticationObj.getAuthenticationType());
-			connectionDto.setLdapCnctnFlag(dmuAuthenticationObj.getLdapCnctnFlag());
-			connectionDto.setKerberosCnctnFlag(dmuAuthenticationObj.getKerberosCnctnFlag());
+			if(dmuAuthenticationObj.getLdapCnctnFlag()!=null && dmuAuthenticationObj.getLdapCnctnFlag().equalsIgnoreCase(DmuConstants.YES))
+			connectionDto.setLdapCnctnFlag("LDAP");
+			if(dmuAuthenticationObj.getKerberosCnctnFlag()!=null && dmuAuthenticationObj.getKerberosCnctnFlag().equalsIgnoreCase(DmuConstants.YES))
+			connectionDto.setKerberosCnctnFlag("KERBEROS");
+			connectionDto.setHdfsLdapDomain(dmuAuthenticationObj.getLdapDomainName());
+			connectionDto.setHdfsLdapUserName(dmuAuthenticationObj.getLdapUserName());
+			connectionDto.setHdfsLdapUserPassw(dmuAuthenticationObj.getLdapPassword());
+			connectionDto.setKerberosHostFqdn(dmuAuthenticationObj.getKerberosHostFqdn());
+			connectionDto.setKerberosHostRealm(dmuAuthenticationObj.getKerberosHostRealm());
+			connectionDto.setKerberosServiceName(dmuAuthenticationObj.getSslKeystorePath());
+			connectionDto.setSslKeystorePath(dmuAuthenticationObj.getSslKeystorePath());
 		}
+	}
+	public void saveDMUAuthenticationProperties(DmuConnectionDTO connectionDto) {
+		DmuAuthenticationEntity dmuAuthentication = authenticationRepository.getOne(1L);
+		dmuAuthentication.setAuthenticationType(connectionDto.getAuthenticationType());
+		if(connectionDto.getCredentialStrgType()!=null && connectionDto.getCredentialStrgType().equalsIgnoreCase("KERBEROS"))
+		{
+			dmuAuthentication.setKerberosCnctnFlag(DmuConstants.YES);
+			dmuAuthentication.setLdapCnctnFlag(DmuConstants.NO);
+
+		}
+		else if(connectionDto.getCredentialStrgType()!=null && connectionDto.getCredentialStrgType().equalsIgnoreCase("LDAP"))
+		{
+			dmuAuthentication.setLdapCnctnFlag(DmuConstants.YES);
+			dmuAuthentication.setKerberosCnctnFlag(DmuConstants.NO);
+		}
+
+		dmuAuthentication.setLdapUserName(connectionDto.getHdfsLdapUserName());
+		dmuAuthentication.setLdapPassword(connectionDto.getHdfsLdapUserPassw());
+		dmuAuthentication.setLdapDomainName(connectionDto.getHdfsLdapDomain());
+		dmuAuthentication.setKerberosHostFqdn(connectionDto.getKerberosHostFqdn());
+		dmuAuthentication.setKerberosHostRealm(connectionDto.getKerberosHostRealm());
+		dmuAuthentication.setKerberosServiceName(connectionDto.getKerberosServiceName());
+		dmuAuthentication.setSslKeystorePath(connectionDto.getSslKeystorePath());
+		authenticationRepository.save(dmuAuthentication);
 	}
 
 	public void populateDMUHdfsProperties(DmuConnectionDTO connectionDto) {

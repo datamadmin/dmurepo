@@ -89,6 +89,12 @@ public class DmuConnectionDTO {
 
 	String ldapDomain;
 
+	String hdfsLdapUserName;
+
+	String hdfsLdapUserPassw;
+
+	String hdfsLdapDomain;
+
 	String scCrdntlAccessType;
 
 	String authenticationType;
