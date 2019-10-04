@@ -29,7 +29,7 @@
                                                     </label>
                                                     <div class="col-sm-4">
                                                         <input type="text" [(ngModel)]="connectionModel.awsAccessIdLc"
-                                                            name="awsAccessIdLc" pInputText class="form-control">
+                                                            name="awsAccessIdLc" pInputText class="form-control" [disabled]="!isAdmin">
                                                     </div>
                                                 </div>
                                                 <div class="form-group row">
@@ -38,7 +38,7 @@
                                                     <div class="col-sm-4">
                                                         <input type="password"
                                                             [(ngModel)]="connectionModel.awsSecretKeyLc"
-                                                            name="awsSecretKeyLc" pInputText class="form-control">
+                                                            name="awsSecretKeyLc" pInputText class="form-control" [disabled]="!isAdmin">
                                                     </div>
                                                 </div>
                                             </ng-template>
@@ -55,7 +55,7 @@
                                                     </label>
                                                     <div class="col-sm-4">
                                                         <input type="text" [(ngModel)]="connectionModel.awsAccessIdSc"
-                                                            name="awsAccessIdSc" pInputText class="form-control">
+                                                            name="awsAccessIdSc" pInputText class="form-control" [disabled]="!isAdmin">
                                                     </div>
                                                 </div>
                                                 <div class="form-group row">
@@ -64,7 +64,7 @@
                                                     <div class="col-sm-4">
                                                         <input type="password"
                                                             [(ngModel)]="connectionModel.awsSecretKeySc"
-                                                            name="awsSecretKeySc" pInputText class="form-control">
+                                                            name="awsSecretKeySc" pInputText class="form-control" [disabled]="!isAdmin">
                                                     </div>
                                                 </div>
                                                 <div class="form-group row">
@@ -72,7 +72,7 @@
                                                         ARN</label>
                                                     <div class="col-sm-4">
                                                         <input type="text" [(ngModel)]="connectionModel.roleArn"
-                                                            name="roleArn" pInputText class="form-control">
+                                                            name="roleArn" pInputText class="form-control" [disabled]="!isAdmin">
                                                     </div>
                                                 </div>
                                                 <div class="form-group row">
@@ -80,7 +80,7 @@
                                                         ARN</label>
                                                     <div class="col-sm-4">
                                                         <input type="text" [(ngModel)]="connectionModel.principalArn"
-                                                            name="principalArn" pInputText class="form-control">
+                                                            name="principalArn" pInputText class="form-control" [disabled]="!isAdmin">
                                                     </div>
                                                 </div>
                                                 <div class="form-group row">
@@ -88,7 +88,7 @@
                                                         Provider ARN</label>
                                                     <div class="col-sm-4">
                                                         <input type="text" [(ngModel)]="connectionModel.samlProviderArn"
-                                                            name="samlProviderArn" pInputText class="form-control">
+                                                            name="samlProviderArn" pInputText class="form-control" [disabled]="!isAdmin">
                                                     </div>
                                                 </div>
                                                 <div class="form-group row">
@@ -105,7 +105,7 @@
                                                     <div class="col-sm-4">
                                                         <input type="text"
                                                             [(ngModel)]="connectionModel.policyArnMembers"
-                                                            name="policyArnMembers" pInputText class="form-control">
+                                                            name="policyArnMembers" pInputText class="form-control" [disabled]="!isAdmin">
                                                     </div>
                                                 </div>
                                                 <div class="form-group row">
@@ -113,7 +113,7 @@
                                                         ID</label>
                                                     <div class="col-sm-4">
                                                         <input type="text" [(ngModel)]="connectionModel.externalId"
-                                                            name="externalId" pInputText class="form-control">
+                                                            name="externalId" pInputText class="form-control" [disabled]="!isAdmin">
                                                     </div>
                                                 </div>
                                                 <div class="form-group row">
@@ -121,7 +121,7 @@
                                                         User Name</label>
                                                     <div class="col-sm-4">
                                                         <input type="text" [(ngModel)]="connectionModel.fdrtdUserName"
-                                                            name="federatedUserName" pInputText class="form-control">
+                                                            name="federatedUserName" pInputText class="form-control" [disabled]="!isAdmin">
                                                     </div>
                                                 </div>
                                                 <div class="form-group row">
@@ -130,7 +130,7 @@
                                                     <div class="col-sm-4">
                                                         <input type="text"
                                                             [(ngModel)]="connectionModel.inlineSesnPolicy"
-                                                            name="inlineSesnPolicy" pInputText class="form-control">
+                                                            name="inlineSesnPolicy" pInputText class="form-control" [disabled]="!isAdmin">
                                                     </div>
                                                 </div>
                                                 <div class="form-group row">
@@ -139,7 +139,7 @@
                                                     <div class="col-sm-4">
                                                         <input type="number" pKeyFilter="int"
                                                             [(ngModel)]="connectionModel.duration" name="duration"
-                                                            pInputText class="form-control">
+                                                            pInputText class="form-control" [disabled]="!isAdmin">
                                                     </div>
                                                 </div>
                                                 <div class="form-group row">
@@ -147,7 +147,7 @@
                                                         Name</label>
                                                     <div class="col-sm-4">
                                                         <input type="text" [(ngModel)]="connectionModel.ldapUserName"
-                                                            name="ldapUserName" pInputText class="form-control">
+                                                            name="ldapUserName" pInputText class="form-control" [disabled]="!isAdmin">
                                                     </div>
                                                 </div>
                                                 <div class="form-group row">
@@ -156,7 +156,7 @@
                                                     <div class="col-sm-4">
                                                         <input type="password"
                                                             [(ngModel)]="connectionModel.ldapUserPassw"
-                                                            name="ldapUserPassw" pInputText class="form-control">
+                                                            name="ldapUserPassw" pInputText class="form-control" [disabled]="!isAdmin">
                                                     </div>
                                                 </div>
                                                 <div class="form-group row">
@@ -164,16 +164,18 @@
                                                         Domain</label>
                                                     <div class="col-sm-4">
                                                         <input type="text" [(ngModel)]="connectionModel.ldapDomain"
-                                                            name="ldapDomain" pInputText class="form-control">
+                                                            name="ldapDomain" pInputText class="form-control" [disabled]="!isAdmin">
                                                     </div>
                                                 </div>
                                                 <div class="form-group row">
                                                     <label class="col-sm-2"></label>
                                                     <div class="col-sm-4">
+                                                            <div style="white-space:nowrap">
                                                         <p-radioButton name="scCrdntlAccessType" value="Assume"
                                                             label="AWS Assume Role (Other AWS Account Authorization)"
                                                             [(ngModel)]="connectionModel.scCrdntlAccessType">
                                                         </p-radioButton>
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 <div class="form-group row">
@@ -309,7 +311,7 @@
                                             </div>
                                             <div class="form-group row">
                                                 <p-radioButton name="authenticationType" value="UNSCRD"
-                                                    label="Unsecured Connection" (click)="cancelConnection('AWS_TO_S3')"
+                                                    label="Unsecured Connection" (click)="resetRadio()"
                                                     [(ngModel)]="connectionModel.authenticationType">
                                                 </p-radioButton>
                                             </div>
@@ -676,3 +678,4 @@
         </div>
     </div>
 </div>
+<p-confirmDialog appendTo="body" header="Confirmation" icon="pi pi-exclamation-triangle"></p-confirmDialog>
