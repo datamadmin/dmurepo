@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { AppService } from 'src/app/core/services/app.service';
 import { NotificationService } from 'src/app/core/services/notification.service';
 import { AuthenticationService } from 'src/app/core/services/auth.service';
+import { ConfirmationService } from 'primeng/api';
 
 @Component({
     selector: 'app-request-preview',
@@ -25,7 +26,8 @@ export class RequestPreviewComponent implements OnInit, OnDestroy {
         private router: Router,
         private appService: AppService,
         private notificationService: NotificationService,
-        private authenticationService: AuthenticationService
+        private authenticationService: AuthenticationService,
+        private confirmationService: ConfirmationService
     ) { }
 
     ngOnDestroy() {
@@ -70,35 +72,53 @@ export class RequestPreviewComponent implements OnInit, OnDestroy {
     }
 
     onCancelFunction() {
-        this.appService.requestModel = undefined;
-        this.appService.requestPreviewList = [];
-        this.appService.isRequestBackClicked = true;
-        this.appService.basketCountSubscription.next(0);
-        this.router.navigate(['/app/request']);
+        this.confirmationService.confirm({
+            message: 'Are you sure want to proceed?',
+            accept: () => {
+                this.appService.requestModel = undefined;
+                this.appService.requestPreviewList = [];
+                this.appService.isRequestBackClicked = true;
+                this.appService.basketCountSubscription.next(0);
+                this.router.navigate(['/app/request']);
+            }
+        });
     }
 
-
+    validateData() {
+        let isValid = true;
+        for (const item of this.selectedRequestList) {
+            if (item["incrementalFlag"]) {
+                if (item["incrementalClmn"] == undefined || item["incrementalClmn"] == null || item["incrementalClmn"].trim().length < 1) {
+                    this.notificationService.showError("Please enter the incremental column value");
+                    isValid = false;
+                    break;
+                }
+            }
+        }
+        return isValid;
+    }
 
     onContinueFunction() {
         if (this.selectedRequestList.length > 0) {
-
-            this.selectedRequestList.forEach(item => {
-                item["incrementalFlag"] = item["incrementalFlag"] == true ? 'Y' : 'N';
-                item["userId"] = this.appService.getCurrentUserName();
-                item["addtoBasket"] = true;
-                item["requestType"] = this.requestModel["requestType"];
-            });
-
-            this.appService.saveRequestPreviewData(this.selectedRequestList).subscribe(
-                (res: any) => {
-                    this.appService.requestModel = undefined;
-                    this.appService.requestPreviewList = [];
-                    this.notificationService.showSuccess("Data saved successfully to basket");
-                    this.router.navigate(['/app/basket']);
-                },
-                (error) => {
-                    this.notificationService.showError(error || "Error while saving request info");
+            if (this.validateData()) {
+                this.selectedRequestList.forEach(item => {
+                    item["incrementalFlag"] = item["incrementalFlag"] == true ? 'Y' : 'N';
+                    item["userId"] = this.appService.getCurrentUserName();
+                    item["addtoBasket"] = true;
+                    item["requestType"] = this.requestModel["requestType"];
                 });
+
+                this.appService.saveRequestPreviewData(this.selectedRequestList).subscribe(
+                    (res: any) => {
+                        this.appService.requestModel = undefined;
+                        this.appService.requestPreviewList = [];
+                        this.notificationService.showSuccess("Data saved successfully to basket");
+                        this.router.navigate(['/app/basket']);
+                    },
+                    (error) => {
+                        this.notificationService.showError(error || "Error while saving request info");
+                    });
+            }
         }
         else {
             this.notificationService.showError("Please select atleast one record");

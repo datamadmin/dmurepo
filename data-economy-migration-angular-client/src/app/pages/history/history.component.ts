@@ -43,6 +43,7 @@ export class HistoryComponent implements OnInit, AfterViewInit {
 
     ngAfterViewInit() {
         this.masterTable.filter(this.filterParams.status, "status", 'startsWith');
+        this.masterTable.filter(this.filterParams.requestType, "requestType", 'startsWith');
     }
 
     ngOnInit() {
@@ -99,6 +100,7 @@ export class HistoryComponent implements OnInit, AfterViewInit {
             .filter(params => params.status)
             .subscribe(params => {
                 this.filterParams.status = params["status"] || "";
+                this.filterParams.requestType = params["requestType"] || "";
             });
 
     }

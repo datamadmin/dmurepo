@@ -144,13 +144,13 @@ export class HomeComponent implements OnInit {
     if (requestType == 'request') {
       let status = this.chartData[0]["requestStatus"]["labels"][config.dataPointIndex];
       this.ngZone.run(() => {
-        this.router.navigate(['/app/history'], { queryParams: { status: status } });
+        this.router.navigate(['/app/history'], { queryParams: { status: status, requestType: 'HIVE TO S3' } });
       });
     }
     else if (requestType == 'recon') {
       let status = this.chartData[0]["reconStatus"]["labels"][config.dataPointIndex];
       this.ngZone.run(() => {
-        this.router.navigate(['/app/recon'], { queryParams: { status: status } });
+        this.router.navigate(['/app/recon'], { queryParams: { status: status, requestType: 'HIVE TO S3' } });
       });
     }
   }

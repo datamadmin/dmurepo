@@ -41,6 +41,7 @@ export class ReconComponent implements OnInit {
 
   ngAfterViewInit() {
     this.masterTable.filter(this.filterParams.status, "status", 'startsWith');
+    this.masterTable.filter(this.filterParams.requestType, "requestType", 'startsWith');
   }
 
   ngOnInit() {
@@ -86,6 +87,7 @@ export class ReconComponent implements OnInit {
       .filter(params => params.status)
       .subscribe(params => {
         this.filterParams.status = params["status"] || "";
+        this.filterParams.requestType = params["requestType"] || "";
       });
   }
 
