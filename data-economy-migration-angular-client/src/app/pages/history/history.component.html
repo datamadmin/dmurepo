@@ -1,0 +1,117 @@
+<div class="container-fluid">
+    <app-page-title title="History" [breadcrumbItems]="breadCrumbItems"></app-page-title>
+
+    <div class="row" *ngIf="showMaster">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="ui-g">
+                        <div class="ui-g-12">
+                            <p-table [paginator]="true" [rows]="10" [style]="{width:'100%'}" [scrollable]="true"
+                                #masterTable [columns]="masterCols" [value]="masterList">
+                                <ng-template pTemplate="header" let-columns>
+                                    <tr>
+                                        <th *ngFor="let col of columns">
+                                            {{col.header}}
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <th *ngFor="let col of columns" [ngSwitch]="col.field">
+                                            <input *ngSwitchDefault pInputText type="text"
+                                                [(ngModel)]="filterParams[col.field]"
+                                                (input)="masterTable.filter($event.target.value, col.field, col.filterMatchMode)">
+                                        </th>
+                                    </tr>
+                                </ng-template>
+                                <ng-template pTemplate="body" let-rowData let-columns="columns">
+                                    <tr>
+                                        <td *ngFor="let col of columns" [ngSwitch]="col.field">
+                                            <span *ngSwitchCase="'requestNo'">
+                                                <a href="javascript: void(0);" class="link"
+                                                    (click)="openReconDetails(rowData)">{{rowData[col.field]}}</a>
+                                            </span>
+                                            <span *ngSwitchCase="'tknztnEnabled'">
+                                                <i
+                                                    [ngClass]="rowData[col.field]=='Y' ? 'fas fa-check' : 'fas fa-times'"></i>
+                                            </span>
+                                            <span *ngSwitchCase="'status'">
+                                                <span *ngIf="rowData.status=='Not Started'"
+                                                    class="badge badge-primary">Not Started</span>
+                                                <span *ngIf="rowData.status=='In Progress'"
+                                                    class="badge badge-warning">In Progress</span>
+                                                <span *ngIf="rowData.status=='Submitted'"
+                                                    class="badge badge-info">Submitted</span>
+                                                <span *ngIf="rowData.status=='Successful'"
+                                                    class="badge badge-success">Successful</span>
+                                                <span *ngIf="rowData.status=='Failed'"
+                                                    class="badge badge-danger">Failed</span>
+                                            </span>
+                                            <span *ngSwitchDefault>
+                                                {{rowData[col.field]}}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </ng-template>
+                            </p-table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" *ngIf="showDetail">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="float-right">
+                        <div class="btn-group mb-2">
+                            <a *ngIf="isTokenizationEnabled" class="btn btn-link text-success"
+                                (click)="downloadTokenizationDetails()">Tokenization
+                                Details</a>
+                            <button class="btn btn-sm btn-secondary" type="button" (click)="cancelDetails()"><i
+                                    class="fas fa-arrow-left mr-2"></i>Back</button>
+                        </div>
+                    </div>
+                    <h4 class="header-title">Request #{{selectedRec.requestNo}}</h4>
+                    <div class="ui-g mt-4">
+                        <div class="ui-g-12">
+                            <p-table [paginator]="true" [rows]="10" [style]="{width:'100%'}" [scrollable]="true"
+                                [columns]="detailCols" [value]="detailList">
+                                <ng-template pTemplate="header" let-columns>
+                                    <tr>
+                                        <th *ngFor="let col of columns">
+                                            {{col.header}}
+                                        </th>
+                                    </tr>
+                                </ng-template>
+                                <ng-template pTemplate="body" let-rowData let-columns="columns">
+                                    <tr>
+                                        <td *ngFor="let col of columns" [ngSwitch]="col.field">
+                                            <span *ngSwitchCase="'status'">
+                                                <span *ngIf="rowData.status=='Not Started'"
+                                                    class="badge badge-primary">Not Started</span>
+                                                <span *ngIf="rowData.status=='In Progress'"
+                                                    class="badge badge-warning">In Progress</span>
+                                                <span *ngIf="rowData.status=='Submitted'"
+                                                    class="badge badge-info">Submitted</span>
+                                                <span *ngIf="rowData.status=='Successful'"
+                                                    class="badge badge-success">Successful</span>
+                                                <span *ngIf="rowData.status=='Failed'"
+                                                    class="badge badge-danger">Failed</span>
+                                            </span>
+                                            <span *ngSwitchDefault>
+                                                {{rowData[col.field]}}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </ng-template>
+                            </p-table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

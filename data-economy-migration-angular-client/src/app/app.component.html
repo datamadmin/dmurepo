@@ -1,0 +1,5 @@
+<router-outlet></router-outlet>
+<div [ngClass]="isSpinnerVisible?'d-block':'d-none'">
+    <div [ngBusy]="{busy: ['loading'], message: loadingMessage}"></div>
+</div>
+<p-toast life="20000"></p-toast>

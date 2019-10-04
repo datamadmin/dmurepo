@@ -1,0 +1,59 @@
+<div class="container-fluid">
+    <app-page-title title="Basket" [breadcrumbItems]="breadCrumbItems"></app-page-title>
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="ui-g ">
+                        <div class="ui-g-12 text-right">
+                            <div class="btn-group">
+                                <button class="btn btn-sm btn-rounded btn-danger" type="button"
+                                    (click)="clearClickFunction()"><i class="fas fa-times mr-2"></i>Clear All</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ui-g mt-4">
+                        <div class="ui-g-12">
+                            <p-table #basketTable [paginator]="true" [rows]="10" [style]="{width:'100%'}"
+                                [scrollable]="true" [columns]="tableCols" [value]="tableData">
+                                <ng-template pTemplate="header" let-columns>
+                                    <tr>
+                                        <th *ngFor="let col of columns">
+                                            {{col.header}}
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <th *ngFor="let col of columns" [ngSwitch]="col.field">
+                                            <input *ngSwitchDefault pInputText type="text"
+                                                (input)="basketTable.filter($event.target.value, col.field, col.filterMatchMode)">
+                                        </th>
+                                    </tr>
+                                </ng-template>
+                                <ng-template pTemplate="body" let-rowData let-columns="columns">
+                                    <tr>
+                                        <td *ngFor="let col of columns" [ngSwitch]="col.field">
+                                            <span *ngSwitchCase="'incrementalFlag'">
+                                                <i
+                                                    [ngClass]="rowData[col.field]=='Y' ? 'fas fa-check' : 'fas fa-times'"></i>
+                                            </span>
+                                            <span *ngSwitchDefault>
+                                                {{rowData[col.field]}}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </ng-template>
+                            </p-table>
+                        </div>
+                    </div>
+                    <div class=" float-right" *ngIf="tableData.length>0">
+                        <button class="btn btn-light mr-2" type="button" (click)="onCancelFunction()">Cancel</button>
+                        <button class="btn  btn-info" type="button" (click)="onContinueFunction()">Submit</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<p-confirmDialog appendTo="body" header="Confirmation" icon="pi pi-exclamation-triangle"></p-confirmDialog>

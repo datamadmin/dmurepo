@@ -1,0 +1,157 @@
+<div class="container-fluid">
+    <app-page-title title="Users" [breadcrumbItems]="breadCrumbItems"></app-page-title>
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card-box">
+                <div class="row">
+                    <div class="col-lg-12 m-0 mb-2">
+                        <button class="btn btn-success float-right" (click)="showAddUser()">
+                            <i class="fas fa-plus mr-1"></i>
+                            Add User
+                        </button>
+                    </div>
+                    <div class="col-lg-12">
+                        <p-table [paginator]="true" [rows]="10" [style]="{width:'100%'}" [scrollable]="true"
+                            [columns]="userCols" [value]="userList">
+                            <ng-template pTemplate="header" let-columns>
+                                <tr>
+                                    <th>
+                                        Sr.No
+                                    </th>
+                                    <th *ngFor="let col of columns">
+                                        {{col.header}}
+                                    </th>
+                                    <th>
+                                        Action
+                                    </th>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="body" let-rowData let-rowIndex="rowIndex" let-columns="columns">
+                                <tr>
+                                    <td>
+                                        {{rowIndex +1}}
+                                    </td>
+                                    <td *ngFor="let col of columns">
+                                        {{rowData[col.field]}}
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-xs btn-info mr-2" (click)="showUpdateUser(rowData)">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn  btn-xs btn-danger" (click)="showDeleteUser(rowData)">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<p-dialog [style]="{width: '600px'}" modal="true" [(visible)]="isAdd">
+    <p-header>
+        Add User
+    </p-header>
+    <div class="ui-g">
+        <div class="col-lg-12">
+            <form autocomplete="off">
+                <div class="ui-g">
+                    <div class="ui-g-4">
+                        <label for="userName">UserName</label>
+                    </div>
+                    <div class="ui-g-8">
+                        <input autocomplete="off" type="text" [(ngModel)]="userModel.userName" name="userName"
+                            pInputText class="form-control" placeholder="Please Enter Username">
+                    </div>
+                </div>
+                <div class="ui-g">
+                    <div class="ui-g-4">
+                        <label for="emailid">Email</label>
+                    </div>
+                    <div class="ui-g-8">
+                        <input autocomplete="off" type="email" name="emailid" pInputText [(ngModel)]="userModel.emailid"
+                            class="form-control" placeholder="Please Enter Email">
+                    </div>
+                </div>
+
+                <div class="ui-g">
+                    <div class="ui-g-4">
+                        <label for="userRole">User Role</label>
+                    </div>
+                    <div class="ui-g-8">
+                        <p-radioButton class="mr-2" name="userRole" value="Admin" label="Admin"
+                            [(ngModel)]="userModel.userRole">
+                        </p-radioButton>
+                        <p-radioButton name="userRole" value="Normal User" label="Normal User"
+                            [(ngModel)]="userModel.userRole">
+                        </p-radioButton>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+    </div>
+    <p-footer>
+        <button type="button" class="mr-2" pButton icon="fas fa-check" (click)="addUserClickFunction()"
+            label="Save"></button>
+        <button type="button" pButton icon="fas fa-times" (click)="cancelClickFunction()" label="Cancel"
+            class="ui-button-secondary"></button>
+    </p-footer>
+</p-dialog>
+
+
+<p-dialog [style]="{width: '600px'}" modal="true" [(visible)]="isUpdate">
+    <p-header>
+        Edit User
+    </p-header>
+    <div class="ui-g">
+        <div class="col-lg-12">
+            <form autocomplete="off">
+                <div class="ui-g">
+                    <div class="ui-g-4">
+                        <label for="userName">UserName</label>
+                    </div>
+                    <div class="ui-g-8">
+                        {{userModel.userName}}
+                    </div>
+                </div>
+                <div class="ui-g">
+                    <div class="ui-g-4">
+                        <label for="emailid">Email</label>
+                    </div>
+                    <div class="ui-g-8">
+                        <input autocomplete="off" pInputText [(ngModel)]="userModel.emailid" type="email" name="emailid"
+                            class="form-control" placeholder="Please Enter Email">
+                    </div>
+                </div>
+
+                <div class="ui-g">
+                    <div class="ui-g-4">
+                        <label for="example-password">User Role</label>
+                    </div>
+                    <div class="ui-g-8">
+                        <p-radioButton class="mr-2" name="userRole" value="Admin" label="Admin"
+                            [(ngModel)]="userModel.userRole">
+                        </p-radioButton>
+                        <p-radioButton name="userRole" value="Normal User" label="Normal User"
+                            [(ngModel)]="userModel.userRole">
+                        </p-radioButton>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+    </div>
+    <p-footer>
+        <button type="button" class="mr-2" pButton icon="fas fa-check" (click)="updateUserClickFunction()"
+            label="Save"></button>
+        <button type="button" pButton icon="fas fa-times" (click)="cancelClickFunction()" label="Cancel"
+            class="ui-button-secondary"></button>
+    </p-footer>
+</p-dialog>
+
+<p-confirmDialog appendTo="body" header="Confirmation" icon="pi pi-exclamation-triangle"></p-confirmDialog>

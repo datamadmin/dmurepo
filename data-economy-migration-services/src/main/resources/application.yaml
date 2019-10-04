@@ -1,0 +1,114 @@
+hive:
+    connection:
+        kerberos:
+            url: jdbc:hive2://{0}:{1}/dbname;AuthMech=1;KrbRealm={2};KrbHostFQDN={3};KrbServiceName={4}
+        ldap:
+            domain:
+                url: jdbc:hive2://{0}:{1}/dbname;AuthMech=3;UID={2}@{3};PWD={4}
+            url: jdbc:hive2://{0}:{1}/dbname;AuthMech=3;UID={2};PWD={3}
+        unsecured:
+            url: jdbc:hive2://{0}:{1}/dbname
+        url: jdbc:hive2://{0}:{1}
+hs2:
+    datasource:
+        driver-class-name: com.cloudera.hive.jdbc41.HS2Driver
+        jdbc-url: jdbc:hive2://18.216.202.239:10000/retaildb
+        password: ''
+        username: ''
+    validate:
+        url: jdbc:hive2://{0}:{1}
+impala:
+    connection:
+        kerberos:
+            url: jdbc:impala://{0}:{1}/dbname;AuthMech=1;KrbRealm={2};KrbHostFQDN={3};KrbServiceName=impala
+        ldap:
+            url: jdbc:impala://{0}:{1}/dbname;AuthMech=3;UID={2}@{3};PWD={4}
+        unsecured:
+            url: jdbc:impala://{0}:{1}/dbname
+        url: jdbc:impala://{0}:{1}
+logging:
+    level:
+        org:
+            hibernate:
+                SQL: DEBUG
+                type:
+                    descriptor:
+                        sql:
+                            BasicBinder: 'TRACE'
+server:
+    port: 5000
+    servlet:
+        context-path: /
+spring:
+    batch.job.enabled: false
+    #batch.initialize-schema: always
+    batch.initializer.enabled: false
+    cache:
+        cache-names: dataeconomycache
+        jcache:
+            config: classpath:ehcache.xml
+        type: ehcache
+    datasource:
+        dbcp2:
+          test-while-idle: true
+          time-between-eviction-runs-millis: 3600000
+          validation-query: SELECT 1
+          test-on-borrow: true
+        driver-class-name: com.mysql.jdbc.Driver
+        hikari:
+            connectionTimeout: 30000
+            idleTimeout: 30000
+            maxLifetime: 2000000
+            maximumPoolSize: 30
+            minimumIdle: 5
+            poolName: SpringBootJPAHikariCP
+        jdbc-url: jdbc:mysql://mysql-instance1.c9z9oimycomq.us-east-2.rds.amazonaws.com:3306/DMU?autoReconnect=true&useSSL=false
+        password: DeDMU!23
+        type: com.zaxxer.hikari.HikariDataSource
+        username: DMU
+        cachePrepStmts: true
+        prepStmtCacheSize: 250
+        prepStmtCacheSqlLimit: 2048
+        useServerPrepStmts: true
+        useLocalSessionState: true
+        useLocalTransactionState: true
+        rewriteBatchedStatements: true
+        cacheResultSetMetadata: true
+        cacheServerConfiguration: true
+        elideSetAutoCommits: true
+        maintainTimeStats: false
+        useCursorFetch: true
+
+    jpa:
+        database: default
+        properties:
+            hibernate:
+                naming-strategy: org.hibernate.cfg.ImprovedNamingStrategy
+                bytecode:
+                    use_reflection_optimizer: false
+                format_sql: true
+                generate_statistics: true
+                id:
+                    new_generator_mappings: false
+                jdbc:
+                    batch_size: 10
+                    batch_versioned_data: true
+                order_inserts: true
+                order_updates: true
+                
+                search:
+                    autoregister_listeners: false
+                show_sql: true
+                use_sql: true
+log4j:
+    appender:
+        logRollingFile: org.apache.log4j.RollingFileAppender
+        logRollingFile.Append: true
+        logRollingFile.Encoding: UTF-8
+        logRollingFile.ImmediateFlush: true
+        logRollingFile.MaxBackupIndex: 10
+        logRollingFile.MaxFileSize: 1MB
+        logRollingFile.layout: org.apache.log4j.PatternLayout
+        logRollingFile.layout.ConversionPattern: '[%-5p][%-22d{yyyy/MM/dd HH:mm:ssS}][%l]%m%n'
+    rootLogger: ALL, logRollingFile
+

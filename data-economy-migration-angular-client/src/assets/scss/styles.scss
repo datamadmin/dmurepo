@@ -1,0 +1,183 @@
+//Core files
+@import "./node_modules/bootstrap/scss/functions";
+@import "./node_modules/bootstrap/scss/variables";
+@import "variables";
+
+.link {
+    cursor: pointer;
+    text-decoration: underline !important;
+}
+
+.link:hover,
+.link:focus {
+    cursor: pointer;
+    text-decoration: underline !important;
+}
+
+.ng-busy {
+    z-index: 1200;
+}
+
+.ng-busy-backdrop {
+    background: #a7adba !important;
+    position: fixed;
+    z-index: 1200;
+}
+
+.ng-busy-default-wrapper {
+    top: 45% !important;
+    position: fixed !important;
+}
+
+
+body {
+
+    // .btn {
+    //     padding: 0.5em 3em;
+    // }
+
+    .ui-toast-icon {
+        color: #fff !important;
+    }
+
+    .ui-toast .ui-toast-message.ui-toast-message-error {
+        background-color: #d9534f;
+        color: #fff;
+
+        .ui-toast-close-icon {
+            color: #fff;
+        }
+    }
+
+    .ui-widget {
+        font-family: Nunito, sans-serif;
+    }
+
+    .ui-table .ui-table-thead>tr>th,
+    .ui-table .ui-table-tbody>tr>td,
+    .ui-table .ui-table-tfoot>tr>td {
+        padding: .85rem;
+        vertical-align: top;
+        border: none;
+        border-top: 1px solid #f5f6f8;
+        text-align: center;
+    }
+
+    .ui-table .ui-paginator-bottom {
+        border: none;
+    }
+
+    .ui-radiobutton .ui-radiobutton-box {
+        width: 18px;
+        height: 18px;
+    }
+
+    .ui-radiobutton-label {
+        vertical-align: middle;
+    }
+
+    .ui-table .ui-widget-header {
+        border: 0;
+    }
+
+    .ui-table .ui-inputtext {
+        width: 100%;
+    }
+
+    .ui-tabview.ui-tabview-top {
+        border: 0 none;
+
+        .ui-tabview-nav {
+            padding: 0;
+            border: 0;
+            background: #ffffff;
+            border-radius: 0;
+
+            li {
+                outline: 0;
+
+                &.ui-state-active {
+                    background-color: #ffffff;
+                    color: #63aee2;
+                    border-bottom: 4px solid #63aee2;
+
+                    a {
+                        color: #63aee2;
+                    }
+                }
+
+                &:not(.ui-state-active):not(.ui-state-disabled):hover {
+                    background-color: #ffffff;
+                }
+
+                a {
+                    padding: 1em 2em;
+                }
+            }
+        }
+    }
+
+    &.authentication-bg-pattern {
+        background-color: #0f90d4;
+
+        .footer {
+            color: #fff !important;
+
+            .text-muted {
+                color: #fff !important;
+            }
+        }
+    }
+
+    @media (min-width: 992px) {
+        #topnav {
+
+            background: #0f90d4;
+            z-index: 1000;
+
+            .navigation-menu {
+                text-align: center;
+
+                >li {
+                    display: inline-block;
+                    float: none;
+
+                    .submenu li a:hover {
+                        color: #0f90d4;
+                    }
+
+                    >a {
+                        padding: 20px;
+                        color: #fff;
+                        transition: none;
+                        -webkit-transition: none;
+                        -moz-transition: none;
+                        -ms-transition: none;
+                        -o-transition: none;
+                        -webkit-transition: none;
+
+                        i {
+                            display: block;
+                            margin: 0 0 5px 0;
+                            float: none;
+                            text-align: center;
+                        }
+
+                        .arrow-down {
+                            display: none;
+                            margin: 0 0 5px 0;
+                        }
+
+                        &.active {
+                            border-bottom: 3px solid #FFCB08;
+                        }
+                    }
+                }
+            }
+        }
+
+        .wrapper {
+            padding: ($topbar-height + 80px) ($grid-gutter-width / 2) 0 ($grid-gutter-width / 2);
+        }
+    }
+}

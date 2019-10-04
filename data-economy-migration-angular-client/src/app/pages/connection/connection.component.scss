@@ -1,0 +1,18 @@
+form {
+    .form-group {
+        &.row {
+            margin-left: 0;
+            margin-right: 0;
+        }
+
+        label {
+            text-align: right;
+        }
+    }
+}
+
+:host ::ng-deep .ui-tabview .ui-tabview-panel {
+    border: 0 !important;
+    padding: 1.5em;
+
+}

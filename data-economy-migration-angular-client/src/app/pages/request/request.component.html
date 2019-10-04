@@ -1,0 +1,156 @@
+<div class="container-fluid">
+    <app-page-title title="Request" [breadcrumbItems]="breadCrumbItems"></app-page-title>
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card-box">
+                <div class="ui-g mb-2">
+                    <div class="ui-g-3">
+                        <h4 class="header-title text-info">Migration Options</h4>
+                    </div>
+                    <div class="ui-g-9">
+                        <h4 class="header-title text-info">Migration Scope</h4>
+                    </div>
+                </div>
+                <p-tabView styleClass="d-flex" orientation="left" (onChange)="handleChange($event)">
+                    <p-tabPanel>
+                        <ng-template pTemplate="header">
+                            <p-radioButton name="requestType" label="HIVE TO S3">
+                            </p-radioButton>
+                        </ng-template>
+                        <form autocomplete="off">
+                            <div class="ui-g">
+                                <div class="ui-g-6">
+                                    <div class="ui-g">
+                                        <div class="ui-g-12">
+                                            <label for="labelName">Create Label</label>
+                                        </div>
+                                        <div class="ui-g-12">
+                                            <input [(ngModel)]="requestModel.labelName" name="labelName" pInputText
+                                                type="text" class="form-control" placeholder="Label">
+                                        </div>
+                                    </div>
+                                    <div class="ui-g">
+                                        <div class="ui-g-12">
+                                            <label for="migrationType">Migration Type</label>
+                                        </div>
+                                        <div class="ui-g-12 ui-fluid">
+                                            <p-dropdown name="migrationType"
+                                                (onChange)="onMigrationTypeChange($event,fileUploadRef,tokenizefileUploadRef)"
+                                                [options]="migrationTypeOptions"
+                                                [(ngModel)]="requestModel.migrationType">
+                                            </p-dropdown>
+                                        </div>
+                                    </div>
+
+                                    <ng-template [ngIf]="requestModel.migrationType=='Full Database'">
+                                        <div class="ui-g">
+                                            <div class="ui-g-12">
+                                                <label for="schemaName">Database Name</label>
+                                            </div>
+                                            <div class="ui-g-12 ui-fluid">
+                                                <p-dropdown name="schemaName" [options]="databaseOptions"
+                                                    [(ngModel)]="requestModel.schemaName">
+                                                </p-dropdown>
+                                            </div>
+                                        </div>
+                                        <div class="ui-g">
+                                            <div class="ui-g-12">
+                                                <label for="targetS3Bucket">Target S3 Bucket</label>
+                                            </div>
+                                            <div class="ui-g-12">
+                                                <input name="targetS3Bucket" [(ngModel)]="requestModel.targetS3Bucket"
+                                                    pInputText type="text" class="form-control"
+                                                    placeholder="Target S3 bucket">
+                                            </div>
+                                        </div>
+                                    </ng-template>
+                                    <ng-template
+                                        [ngIf]="requestModel.migrationType=='List of table from speadsheet (csv file)'">
+                                        <div class="ui-g">
+                                            <div class="ui-g-12">
+                                                <label for="filePath">File Path</label>
+                                                <a href="/assets/data/Table_Details_Template.csv" download
+                                                    class="link ml-3 text-success">File Template</a>
+                                            </div>
+                                            <div class="ui-g-12">
+                                                <p-fileUpload #fileUploadRef chooseLabel="Browse" name="filePath"
+                                                    customUpload="true" [showCancelButton]="false"
+                                                    [showUploadButton]="false" accept=".csv" maxFileSize="5000000"
+                                                    (onSelect)="fileSelectHandler($event,fileUploadRef)">
+                                                </p-fileUpload>
+                                            </div>
+                                        </div>
+                                    </ng-template>
+                                    <ng-template [ngIf]="isTokenizationEnabled && requestModel.migrationType">
+                                        <div class="ui-g" *ngIf="requestModel.migrationType">
+                                            <div class="ui-g-12">
+                                                <label for="tknztnEnabled">Tokenize the data before copying?
+                                                </label>
+                                            </div>
+                                            <div class="ui-g-12">
+                                                <p-radioButton name="tknztnEnabled" class="mr-1" label="Yes" value="Y"
+                                                    [disabled]="!isTokenizationEnabled"
+                                                    [(ngModel)]="requestModel.tknztnEnabled">
+                                                </p-radioButton>
+                                                <p-radioButton name="tknztnEnabled" label="No" value="N"
+                                                    [(ngModel)]="requestModel.tknztnEnabled">
+                                                </p-radioButton>
+                                            </div>
+                                        </div>
+                                    </ng-template>
+                                    <ng-template
+                                        [ngIf]="isTokenizationEnabled && requestModel.migrationType && requestModel.tknztnEnabled=='Y'">
+                                        <div class="ui-g">
+                                            <div class="ui-g-12">
+                                                <label for="tokenizefilePath">Tokenization File Path</label>
+                                                <a href="/assets/data/Tokenization_ Details_Template.csv" download
+                                                    class="link ml-3 text-success">File Template</a>
+                                            </div>
+                                            <div class="ui-g-12">
+                                                <p-fileUpload #tokenizefileUploadRef chooseLabel="Browse"
+                                                    name="tokenizefilePath" customUpload="true"
+                                                    [showCancelButton]="false" [showUploadButton]="false" accept=".csv"
+                                                    maxFileSize="5000000"
+                                                    (onSelect)="tokenizationFileSelectHandler($event,tokenizefileUploadRef)">
+                                                </p-fileUpload>
+                                            </div>
+                                        </div>
+                                    </ng-template>
+                                    <div class="ui-g mt-2">
+                                        <div class="ui-g-12">
+                                            <div class="btn-group">
+                                                <button class="btn btn-danger mr-2" type="button"
+                                                    (click)="cancelConnection()">Cancel</button>
+                                                <button class="btn btn-info" type="button"
+                                                    (click)="onContinueFunction()">Continue</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </p-tabPanel>
+                    <p-tabPanel disabled="true">
+                        <ng-template pTemplate="header">
+                            <p-radioButton disabled="true" name="requestType" label="Teradata TO S3">
+                            </p-radioButton>
+                        </ng-template>
+                    </p-tabPanel>
+                    <p-tabPanel disabled="true">
+                        <ng-template pTemplate="header">
+                            <p-radioButton disabled="true" name="requestType" label="Teradata TO RedShift">
+                            </p-radioButton>
+                        </ng-template>
+                    </p-tabPanel>
+                    <p-tabPanel disabled="true">
+                        <ng-template pTemplate="header">
+                            <p-radioButton disabled="true" name="requestType" label="Teradata TO Snowflake">
+                            </p-radioButton>
+                        </ng-template>
+                    </p-tabPanel>
+                </p-tabView>
+
+            </div>
+        </div>
+    </div>
+</div>

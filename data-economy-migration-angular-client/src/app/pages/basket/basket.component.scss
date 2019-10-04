@@ -1,0 +1,9 @@
+:host ::ng-deep {
+    .ui-widget-header {
+        border: 0;
+    }
+
+    .ui-table-tbody .ui-inputtext {
+        width: 100%;
+    }
+}
