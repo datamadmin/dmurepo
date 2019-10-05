@@ -115,15 +115,15 @@ export class ConnectionComponent implements OnInit {
 
     cancelConnection(connectionGroup: CONNECTION_GROUP) {
         this.confirmationService.confirm({
-             message: 'Are you sure to want to cancel?',
-             accept: () => {
-                  this.getConnectionInfo();
-             }
-         });
-     }
-     resetRadio() {
-        this.getConnectionInfo();
-     }
+            message: 'Are you sure to want to cancel?',
+            accept: () => {
+                this.getConnectionInfo();
+            }
+        });
+    }
+    //  resetRadio() {
+    //     this.getConnectionInfo();
+    //  }
 
     isPropValExists(value) {
         if (value == null || value == undefined || value.length < 1) {

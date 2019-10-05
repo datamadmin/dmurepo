@@ -42,8 +42,8 @@ export class HistoryComponent implements OnInit, AfterViewInit {
     ) { }
 
     ngAfterViewInit() {
-        this.masterTable.filter(this.filterParams.status, "status", 'startsWith');
-        this.masterTable.filter(this.filterParams.requestType, "requestType", 'startsWith');
+        // this.masterTable.filter(this.filterParams.status, "status", 'startsWith');
+        // this.masterTable.filter(this.filterParams.requestType, "requestType", 'startsWith');
     }
 
     ngOnInit() {
@@ -64,7 +64,7 @@ export class HistoryComponent implements OnInit, AfterViewInit {
                 { field: 'tknztnEnabled', header: 'Tokenization Enabled' },
                 { field: 'status', header: 'Status' },
                 { field: 'requestType', header: 'Request Type' },
-                { field: 'scriptGenCmpltTime', header: 'Script Generation Completed Time' },
+                // { field: 'scriptGenCmpltTime', header: 'Script Generation Completed Time' },
                 { field: 'exctnCmpltTime', header: 'Execution Completed Time' }
             ];
         }
@@ -75,7 +75,7 @@ export class HistoryComponent implements OnInit, AfterViewInit {
                 { field: 'requestedTime', header: 'Requested Time' },
                 { field: 'status', header: 'Status' },
                 { field: 'requestType', header: 'Request Type' },
-                { field: 'scriptGenCmpltTime', header: 'Script Generation Completed Time' },
+                // { field: 'scriptGenCmpltTime', header: 'Script Generation Completed Time' },
                 { field: 'exctnCmpltTime', header: 'Execution Completed Time' }
             ];
 
@@ -105,13 +105,24 @@ export class HistoryComponent implements OnInit, AfterViewInit {
 
     }
 
+    // clearMasterTableFilter() {
+    //     for (const key in this.masterCols) {
+    //         this.filterParams[key] = "";
+    //     }
+    //     this.masterTable.filter(this.filterParams.status, "status", 'startsWith');
+    //     this.masterTable.filter(this.filterParams.requestType, "requestType", 'startsWith');
+    // }
+
     /**
      * fetches the table value
      */
     _fetchData() {
+        this.masterList = [];
         this.appService.getHistoryMainList().subscribe(
             (res: any) => {
                 this.masterList = res;
+                this.masterTable.filter(this.filterParams.status, "status", 'startsWith');
+                this.masterTable.filter(this.filterParams.requestType, "requestType", 'startsWith');
             },
             (error) => {
                 this.notificationService.showError(error || "System Temporarly unavailable");

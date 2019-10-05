@@ -6,6 +6,7 @@ import { AuthenticationService } from 'src/app/core/services/auth.service';
 import { NotificationService } from 'src/app/core/services/notification.service';
 import { AppService } from 'src/app/core/services/app.service';
 import { FileUpload } from 'primeng/fileupload';
+import { ConfirmationService } from 'primeng/api';
 
 @Component({
     selector: 'app-request',
@@ -44,7 +45,8 @@ export class RequestComponent implements OnInit {
         private router: Router,
         private authenticationService: AuthenticationService,
         private notificationService: NotificationService,
-        private appService: AppService
+        private appService: AppService,
+        private confirmationService: ConfirmationService
     ) { }
 
     ngOnInit() {
@@ -218,16 +220,21 @@ export class RequestComponent implements OnInit {
     }
 
     cancelConnection() {
-        this.requestModel = {
-            "labelName": "",
-            "requestType": null,
-            "migrationType": null,
-            "schemaName": null,
-            "migartionFileList": [],
-            "tknztnEnabled": YES_OR_NO_OPTIONS.NO,
-            'targetS3Bucket': "",
-            "tokenizationFileList": []
-        }
+        this.confirmationService.confirm({
+            message: 'Are you sure want to cancel?',
+            accept: () => {
+                this.requestModel = {
+                    "labelName": "",
+                    "requestType": null,
+                    "migrationType": null,
+                    "schemaName": null,
+                    "migartionFileList": [],
+                    "tknztnEnabled": YES_OR_NO_OPTIONS.NO,
+                    'targetS3Bucket': "",
+                    "tokenizationFileList": []
+                };
+            }
+        });
     }
 
     onContinueFunction() {
@@ -268,6 +275,7 @@ export class RequestComponent implements OnInit {
             }
             else if (this.requestModel.migrationType == MIGRATION_TYPE.LIST_OF_TABLE_FROM_FILE) {
                 if (this.filePathRecords.length > 0) {
+                    this.requestModel.targetS3Bucket = this.filePathRecords[0]["targetS3Bucket"]
                     this.appService.requestModel = this.requestModel;
                     this.appService.requestPreviewList = this.filePathRecords;
                     this.router.navigate(['/app/request/preview']);

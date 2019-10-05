@@ -62,6 +62,9 @@ export class HomeComponent implements OnInit {
       tooltip: {
         x: {
           show: false
+        },
+        y: {
+          formatter: (value) => { return value + "%" },
         }
       },
       grid: {
@@ -109,6 +112,9 @@ export class HomeComponent implements OnInit {
       tooltip: {
         x: {
           show: false
+        },
+        y: {
+          formatter: (value) => { return value + "%" },
         }
       },
       grid: {

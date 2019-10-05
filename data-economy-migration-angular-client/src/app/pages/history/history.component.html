@@ -5,10 +5,17 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
+                    <!-- <div class="float-right">
+                        <div class="btn-group mb-2">
+                            <button class="btn btn-sm btn-danger" type="button" (click)="clearMasterTableFilter()"><i
+                                    class="fas fa-history mr-2"></i>Clear All</button>
+                        </div>
+                    </div> -->
                     <div class="ui-g">
                         <div class="ui-g-12">
                             <p-table [paginator]="true" [rows]="10" [style]="{width:'100%'}" [scrollable]="true"
-                                #masterTable [columns]="masterCols" [value]="masterList">
+                                #masterTable [columns]="masterCols" [value]="masterList" sortField="requestedTime"
+                                sortOrder="-1">
                                 <ng-template pTemplate="header" let-columns>
                                     <tr>
                                         <th *ngFor="let col of columns">
@@ -36,9 +43,11 @@
                                             </span>
                                             <span *ngSwitchCase="'status'">
                                                 <span *ngIf="rowData.status=='Not Started'"
-                                                    class="badge badge-primary">Not Started</span>
+                                                    class="badge badge-primary">Not
+                                                    Started</span>
                                                 <span *ngIf="rowData.status=='In Progress'"
-                                                    class="badge badge-warning">In Progress</span>
+                                                    class="badge badge-warning">In
+                                                    Progress</span>
                                                 <span *ngIf="rowData.status=='Submitted'"
                                                     class="badge badge-info">Submitted</span>
                                                 <span *ngIf="rowData.status=='Successful'"
@@ -90,9 +99,11 @@
                                         <td *ngFor="let col of columns" [ngSwitch]="col.field">
                                             <span *ngSwitchCase="'status'">
                                                 <span *ngIf="rowData.status=='Not Started'"
-                                                    class="badge badge-primary">Not Started</span>
+                                                    class="badge badge-primary">Not
+                                                    Started</span>
                                                 <span *ngIf="rowData.status=='In Progress'"
-                                                    class="badge badge-warning">In Progress</span>
+                                                    class="badge badge-warning">In
+                                                    Progress</span>
                                                 <span *ngIf="rowData.status=='Submitted'"
                                                     class="badge badge-info">Submitted</span>
                                                 <span *ngIf="rowData.status=='Successful'"

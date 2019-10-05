@@ -4,6 +4,7 @@ import { AppService } from 'src/app/core/services/app.service';
 import { NotificationService } from 'src/app/core/services/notification.service';
 import { AuthenticationService } from 'src/app/core/services/auth.service';
 import { ConfirmationService } from 'primeng/api';
+import { MIGRATION_TYPE } from 'src/app/core/constants/request.constants';
 
 @Component({
     selector: 'app-request-preview',
@@ -47,6 +48,11 @@ export class RequestPreviewComponent implements OnInit, OnDestroy {
                 item["targetS3Bucket"] = item["targetS3Bucket"] + "/" + item["tableName"];
             });
 
+            if (this.requestModel.migrationType == MIGRATION_TYPE.LIST_OF_TABLE_FROM_FILE) {
+                this.selectedRequestList = this.previewList;
+                this.appService.basketCountSubscription.next(this.selectedRequestList.length);
+            }
+
             // tslint:disable-next-line: max-line-length
             this.breadCrumbItems = [
                 { label: 'Home', path: '/app/home' },
@@ -67,8 +73,15 @@ export class RequestPreviewComponent implements OnInit, OnDestroy {
             ];
         }
         else {
-            this.onCancelFunction();
+            this.onBackFunction();
         }
+    }
+
+    onBackFunction() {
+        this.appService.requestPreviewList = [];
+        this.appService.isRequestBackClicked = true;
+        this.appService.basketCountSubscription.next(0);
+        this.router.navigate(['/app/request']);
     }
 
     onCancelFunction() {
@@ -77,7 +90,7 @@ export class RequestPreviewComponent implements OnInit, OnDestroy {
             accept: () => {
                 this.appService.requestModel = undefined;
                 this.appService.requestPreviewList = [];
-                this.appService.isRequestBackClicked = true;
+                this.appService.isRequestBackClicked = false;
                 this.appService.basketCountSubscription.next(0);
                 this.router.navigate(['/app/request']);
             }

@@ -40,8 +40,8 @@ export class ReconComponent implements OnInit {
   ) { }
 
   ngAfterViewInit() {
-    this.masterTable.filter(this.filterParams.status, "status", 'startsWith');
-    this.masterTable.filter(this.filterParams.requestType, "requestType", 'startsWith');
+    // this.masterTable.filter(this.filterParams.status, "status", 'startsWith');
+    // this.masterTable.filter(this.filterParams.requestType, "requestType", 'startsWith');
   }
 
   ngOnInit() {
@@ -72,8 +72,8 @@ export class ReconComponent implements OnInit {
       { field: 'targetS3Bucket', header: 'Target Bucket Name' },
       { field: 'incrementalFlag', header: 'Incremental Flag' },
       { field: 'incrementalColumn', header: 'Incremental Column' },
-      { field: 'sourceCount', header: 'Source Account' },
-      { field: 'targetCount', header: 'Target Account' },
+      { field: 'sourceCount', header: 'Source Count' },
+      { field: 'targetCount', header: 'Target Count' },
       { field: 'status', header: 'Recon Status' }
     ];
 
@@ -91,13 +91,24 @@ export class ReconComponent implements OnInit {
       });
   }
 
+  // clearMasterTableFilter() {
+  //   for (const key in this.masterCols) {
+  //     this.filterParams[key] = "";
+  //   }
+  //   this.masterTable.filter(this.filterParams.status, "status", 'startsWith');
+  //   this.masterTable.filter(this.filterParams.requestType, "requestType", 'startsWith');
+  // }
+
   /**
     * fetches the table value
     */
   _fetchData() {
+    this.masterList = [];
     this.appService.getReconMainList().subscribe(
       (res: any) => {
         this.masterList = res;
+        this.masterTable.filter(this.filterParams.status, "status", 'startsWith');
+        this.masterTable.filter(this.filterParams.requestType, "requestType", 'startsWith');
       },
       (error) => {
         this.notificationService.showError(error || "System Temporarly unavailable");

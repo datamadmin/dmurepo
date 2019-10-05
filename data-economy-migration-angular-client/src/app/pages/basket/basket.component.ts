@@ -40,7 +40,8 @@ export class BasketComponent implements OnInit {
             { field: 'filterCondition', header: 'Filter Condition' },
             { field: 'targetS3Bucket', header: 'Target Bucket Name' },
             { field: 'incrementalFlag', header: 'Incremental Flag' },
-            { field: 'incrementalClmn', header: 'Incremental Column' }
+            { field: 'incrementalClmn', header: 'Incremental Column' },
+            { field: 'requestType', header: 'Request Type' }
         ];
     }
 
@@ -63,6 +64,18 @@ export class BasketComponent implements OnInit {
                 console.log(error);
             });
     }
+
+    // onBackFunction() {
+    //     this.appService.cancelAllBasketItems().subscribe(
+    //         (res: any) => {
+    //             this.appService.isRequestBackClicked = true;
+    //             this.appService.basketCountSubscription.next(0);
+    //             this.router.navigate(['/app/request/preview']);
+    //         },
+    //         (error) => {
+    //             this.notificationService.showError(error || "System Temporarly unavailable");
+    //         });
+    // }
 
     onCancelFunction() {
         this.confirmationService.confirm({
