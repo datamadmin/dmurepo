@@ -62,10 +62,10 @@ spring:
             maximumPoolSize: 30
             minimumIdle: 5
             poolName: SpringBootJPAHikariCP
-        jdbc-url: jdbc:mysql://192.168.1.97:3306/DMU?autoReconnect=true&useSSL=false
-        password: mysql
+        jdbc-url: jdbc:mysql://mysql-instance1.c9z9oimycomq.us-east-2.rds.amazonaws.com:3306/DMU?autoReconnect=true&useSSL=false
+        password: DeDMU!23
         type: com.zaxxer.hikari.HikariDataSource
-        username: root
+        username: DMU
         cachePrepStmts: true
         prepStmtCacheSize: 250
         prepStmtCacheSqlLimit: 2048

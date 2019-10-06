@@ -36,7 +36,7 @@ import org.springframework.scheduling.annotation.SchedulingConfigurer;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 
-import com.dataeconomy.migration.app.batch.listener.DmuChunkListenerSupport;
+import com.dataeconomy.migration.app.batch.listener.DmuItemReaderListener;
 import com.dataeconomy.migration.app.batch.listener.DmuJobCompletionNotificationListener;
 import com.dataeconomy.migration.app.batch.listener.DmuStepExecutionNotificationListener;
 import com.dataeconomy.migration.app.batch.processor.DmuSchedulerProcessor;
@@ -91,7 +91,7 @@ public class DmuBatchScheduler implements SchedulingConfigurer {
 				inProgressCount, noOfParallelusers, noOfParallelJobs);
 		if (inProgressCount < noOfParallelusers) {
 			long taskSubmittedCount = historyMainRepository.getTaskDetailsCount(DmuConstants.SUBMITTED);
-			if (taskSubmittedCount > 0L) {
+			if (taskSubmittedCount > 0) {
 
 				long limitCount = ((noOfParallelusers - inProgressCount) > taskSubmittedCount) ? taskSubmittedCount
 						: (noOfParallelusers - inProgressCount);
@@ -110,6 +110,7 @@ public class DmuBatchScheduler implements SchedulingConfigurer {
 												Thread.currentThread().getName(), historyEntity.getRequestNo());
 										JobExecution jobExecution = jobLauncher.run(job, new JobParametersBuilder()
 												.addString("requestNo", historyEntity.getRequestNo())
+												.addLong("parallelJobs", getJobCount(historyEntity.getRequestNo()))
 												.addString("name",
 														historyEntity.getRequestNo() + " -" + historyEntity.getUserId())
 												.addDate("date", new Date()).addLong("time", System.currentTimeMillis())
@@ -144,28 +145,30 @@ public class DmuBatchScheduler implements SchedulingConfigurer {
 	public RepositoryItemReader<DmuHistoryDetailEntity> reader(@Value("#{jobParameters['requestNo']}") String requestNo,
 			DmuHistoryDetailRepository historyDetailRepository) {
 		log.info(" processing item reader for requestNo : {} ", requestNo);
-		RepositoryItemReader<DmuHistoryDetailEntity> fullfillment = new RepositoryItemReader<>();
-		fullfillment.setRepository(historyDetailRepository);
-		fullfillment.setMethodName("findHistoryDetailsByRequestNoAndStatusListForBatch");
+		RepositoryItemReader<DmuHistoryDetailEntity> historyDetailsRepositoryReader = new RepositoryItemReader<>();
+		historyDetailsRepositoryReader.setRepository(historyDetailRepository);
+		historyDetailsRepositoryReader.setMethodName("findHistoryDetailsByRequestNoAndStatusListForBatch");
 		List<Object> list = Lists.newArrayList();
 		list.add(requestNo);
 		list.add(DmuConstants.SUBMITTED);
-		fullfillment.setArguments(list);
-		HashMap<String, Sort.Direction> sorts = new HashMap<>();
+		historyDetailsRepositoryReader.setArguments(list);
+		HashMap<String, Sort.Direction> sorts = new HashMap<>(); 
 		sorts.put("dmuHIstoryDetailPK.requestNo", Direction.ASC);
-		fullfillment.setSort(sorts);
-		fullfillment.setPageSize(Math.toIntExact(getJobCount(requestNo)));
-		return fullfillment;
+		int noOfThreads = Math.toIntExact(getJobCount(requestNo));
+		log.info(" RepositoryItemReader processing with records count {} ", noOfThreads);
+		historyDetailsRepositoryReader.setMaxItemCount(noOfThreads);
+		historyDetailsRepositoryReader.setSort(sorts);
+		return historyDetailsRepositoryReader;
 	}
 
 	@Bean
 	public Step step1(StepBuilderFactory stepBuilderFactory, DmuSchedulerProcessor schedulerProcessor,
 			DmuSchedulerJdbcWriter stepWriter, DmuStepExecutionNotificationListener stepListener,
 			RepositoryItemReader<DmuHistoryDetailEntity> reader, TaskExecutor taskExecutor,
-			DmuChunkListenerSupport dmuChunkListenerSupport) {
-		return stepBuilderFactory.get("step1").<DmuHistoryDetailEntity, DmuHistoryDetailEntity>chunk(10).reader(reader)
-				.processor(schedulerProcessor).writer(stepWriter).listener(stepListener)
-				.listener(dmuChunkListenerSupport).taskExecutor(taskExecutor).throttleLimit(30).build();
+			DmuItemReaderListener dmuItemReaderListener) {
+		return stepBuilderFactory.get("step1").<DmuHistoryDetailEntity, DmuHistoryDetailEntity>chunk(1).reader(reader)
+				.processor(schedulerProcessor).chunk(1).writer(stepWriter).listener(stepListener)
+				.listener(dmuItemReaderListener).taskExecutor(taskExecutor).throttleLimit(30).build();
 	}
 
 	@Bean
@@ -190,8 +193,8 @@ public class DmuBatchScheduler implements SchedulingConfigurer {
 	@Bean
 	public TaskScheduler poolScheduler() {
 		ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
-		scheduler.setThreadNamePrefix("poolScheduler");
-		scheduler.setPoolSize(20);
+		scheduler.setThreadNamePrefix("DmuBatchScheduler-Async");
+		scheduler.setPoolSize(30);
 		return scheduler;
 	}
 
@@ -226,4 +229,5 @@ public class DmuBatchScheduler implements SchedulingConfigurer {
 			return 0L;
 		}
 	}
+
 }

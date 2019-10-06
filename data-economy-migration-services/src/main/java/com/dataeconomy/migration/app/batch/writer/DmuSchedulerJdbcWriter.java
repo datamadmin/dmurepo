@@ -24,7 +24,7 @@ public class DmuSchedulerJdbcWriter implements ItemWriter<DmuHistoryDetailEntity
 	@Override
 	public synchronized void write(List<? extends DmuHistoryDetailEntity> items) throws Exception {
 		Optional.ofNullable(items).orElse(new ArrayList<>()).stream().limit(1).forEach(item -> {
-			log.info(" => sr No " + item.getDmuHIstoryDetailPK().getSrNo());
+			log.info(" => DmuSchedulerJdbcWriter =>  sr No " + item.getDmuHIstoryDetailPK().getSrNo());
 			stepExecution.getJobExecution().getExecutionContext().put("requestNo",
 					item.getDmuHIstoryDetailPK().getRequestNo());
 		});

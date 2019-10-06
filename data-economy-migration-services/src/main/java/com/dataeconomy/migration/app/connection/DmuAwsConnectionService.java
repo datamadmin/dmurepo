@@ -81,11 +81,11 @@ public class DmuAwsConnectionService {
 		}
 	}
 
-	public BasicSessionCredentials getBasicSessionCredentials() {
+	public synchronized BasicSessionCredentials getBasicSessionCredentials() {
 		return basicSessionCredentials;
 	}
 
-	public void setBasicSessionCredentials(BasicSessionCredentials basicSessionCredentials) {
+	public synchronized void setBasicSessionCredentials(BasicSessionCredentials basicSessionCredentials) {
 		this.basicSessionCredentials = basicSessionCredentials;
 	}
 

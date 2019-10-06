@@ -35,5 +35,7 @@ public class DmuBasketDTO {
 
 	private String requestType;
 
+	private String requestNo;
+
 	private boolean addtoBasket;
 }

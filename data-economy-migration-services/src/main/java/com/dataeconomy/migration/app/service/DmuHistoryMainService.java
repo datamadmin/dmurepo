@@ -33,6 +33,7 @@ public class DmuHistoryMainService {
 			List<DmuHistoryMainEntity> dmuHistoryDetailOpt = historyMainRepository.findAll();
 			return Optional.ofNullable(dmuHistoryDetailOpt).orElse(new ArrayList<>()).stream()
 					.map(dmuHistoryDetailObj -> DmuHistoryDTO.builder().requestNo(dmuHistoryDetailObj.getRequestNo())
+							.requestType(dmuHistoryDetailObj.getRequestType())
 							.userId(dmuHistoryDetailObj.getUserId())
 							.requestedTime(dmuHistoryDetailObj.getRequestedTime())
 							.status(dmuHistoryDetailObj.getStatus()).requestType(dmuHistoryDetailObj.getRequestType())

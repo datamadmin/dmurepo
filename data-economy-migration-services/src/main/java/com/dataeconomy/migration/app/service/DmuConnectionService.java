@@ -61,6 +61,9 @@ public class DmuConnectionService {
 	@Autowired
 	DmuServiceHelper dmuHelperService;
 
+	@Autowired
+	DmuAuthenticationService dmuAuthenticationService;
+
 	@Transactional
 	@Timed
 	public boolean validateConnection(DmuConnectionDTO connectionDto) throws DataMigrationException {
@@ -106,26 +109,30 @@ public class DmuConnectionService {
 	@Timed
 	public boolean saveConnectionDetails(DmuConnectionDTO connectionDto) throws DataMigrationException {
 		try {
-			if (DmuConstants.AWS_TO_S3.equalsIgnoreCase(connectionDto.getConnectionGroup())) {
+			switch (connectionDto.getConnectionGroup()) {
+			case DmuConstants.AWS_TO_S3:
 				dmuHelperService.saveDMUS3Properties(connectionDto);
 				awsConnectionService.populateAWSCredentials();
-			}
-			if (DmuConstants.HDFS.equalsIgnoreCase(connectionDto.getConnectionGroup())) {
+				break;
+
+			case DmuConstants.HDFS:
+				dmuAuthenticationService.saveAuthenticationDetails(connectionDto);
 				dmuHelperService.saveDMUHdfsEntityProperties(connectionDto);
-				dmuHelperService.saveDMUAuthenticationProperties(connectionDto);
-				//hdfsConnectionService.initDataSourceConfig();
-			}
-			if (DmuConstants.TARGET_FILE_PROPS.equalsIgnoreCase(connectionDto.getConnectionGroup())) {
+				hdfsConnectionService.initDataSourceConfig();
+				break;
+
+			case DmuConstants.TARGET_FILE_PROPS:
 				dmuHelperService.saveTGTFormatProperties(connectionDto);
-			}
-			if (DmuConstants.OTHER_PROPS.equalsIgnoreCase(connectionDto.getConnectionGroup())) {
+				break;
+
+			case DmuConstants.OTHER_PROPS:
 				dmuHelperService.saveTGTOtherProperties(connectionDto);
+				break;
+			default:
+				break;
 			}
 			dmuHelperService.init();
 		} catch (Exception exception) {
-			
-			
-			
 			log.info(" Exception occured at ConnectionService :: saveConnectionDetails ::   {} ",
 					ExceptionUtils.getStackTrace(exception));
 			throw new DataMigrationException("Exception while saving connection properties ");
@@ -143,7 +150,6 @@ public class DmuConnectionService {
 			dmuHelperService.populateDMUAuthenticationProperties(connectionDto);
 			dmuHelperService.populateTGTFormatProperties(connectionDto);
 			dmuHelperService.populateTGTOtherProperties(connectionDto);
-			System.out.println("HDFSdomain"+connectionDto.getHdfsLdapDomain());
 			return connectionDto;
 		} catch (Exception exception) {
 			log.info(" Exception occured at ConnectionService :: getConnectionDetails {} ",

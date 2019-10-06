@@ -122,6 +122,11 @@
 			<artifactId>aws-java-sdk</artifactId>
 			<version>1.11.327</version>
 		</dependency>
+		<dependency>
+			<groupId>commons-dbutils</groupId>
+			<artifactId>commons-dbutils</artifactId>
+			<version>1.6</version>
+		</dependency>
 		<!-- Imapala Dependencies -->
 		<dependency>
 			<groupId>com.cloudera.impala.jdbc</groupId>

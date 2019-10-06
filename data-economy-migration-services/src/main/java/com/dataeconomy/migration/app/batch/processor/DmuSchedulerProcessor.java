@@ -1,6 +1,7 @@
 package com.dataeconomy.migration.app.batch.processor;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -44,6 +45,9 @@ public class DmuSchedulerProcessor implements ItemProcessor<DmuHistoryDetailEnti
 	@Autowired
 	DmuServiceHelper dmuServiceHelper;
 
+	@Autowired
+	DmuFilterConditionProcessor dmuFilterConditionProcessor;
+
 	@Override
 	@Timed
 	public synchronized DmuHistoryDetailEntity process(DmuHistoryDetailEntity dmuHistoryDetailEntity) throws Exception {
@@ -66,7 +70,8 @@ public class DmuSchedulerProcessor implements ItemProcessor<DmuHistoryDetailEnti
 						dmuHistoryDetailEntity.getDmuHIstoryDetailPK().getSrNo(), DmuConstants.NEW_SCENARIO);
 			} else if (StringUtils.isNotBlank(dmuHistoryDetailEntity.getFilterCondition()) && StringUtils
 					.equalsIgnoreCase(DmuConstants.YES, dmuServiceHelper.getProperty(DmuConstants.SRC_FORMAT_FLAG))) {
-				// TO DO
+				dmuFilterConditionProcessor.processFilterCondition(dmuHistoryDetailEntity);
+				migrateDataToS3ForFilterCondition(dmuHistoryDetailEntity);
 			} else {
 				historyDetailRepository.updateByRequestNoAndSrNoAndStatus(
 						dmuHistoryDetailEntity.getDmuHIstoryDetailPK().getRequestNo(),
@@ -166,13 +171,12 @@ public class DmuSchedulerProcessor implements ItemProcessor<DmuHistoryDetailEnti
 					historyEntity.setStatus(DmuConstants.SUCCESS);
 					historyDetailRepository.save(historyEntity);
 					log.info(
-							"called=> ScriptGenerationService ::  proceedScriptGenerationForRequest :: proceedScriptGenerationForRequestHelper :: hiveLocation {} :: busketName :: {} :: status => {} ",
+							"called=> DmuSchedulerProcessor ::  migrateDataToS3 ::  hiveLocation {} :: busketName :: {} :: status => {} ",
 							hdfsPath, historyEntity.getTargetS3Bucket(), DmuStatusConstants.HttpConstants.SUCCESS);
 				} else {
 					historyEntity.setStatus(DmuConstants.FAILED);
 					historyDetailRepository.save(historyEntity);
-					log.info(
-							"called=> ScriptGenerationService ::  proceedScriptGenerationForRequest :: proceedScriptGenerationForRequestHelper :: hiveLocation {} :: busketName :: {} :: status => {} ",
+					log.info("called=> DmuSchedulerProcessor hiveLocation {} :: busketName :: {} :: status => {} ",
 							hdfsPath, historyEntity.getTargetS3Bucket(), DmuStatusConstants.HttpConstants.FAILURE);
 				}
 			} catch (Exception exception) {
@@ -182,6 +186,71 @@ public class DmuSchedulerProcessor implements ItemProcessor<DmuHistoryDetailEnti
 						"Exception occurred at ScriptGenerationService ::  proceedScriptGenerationForRequest :: proceedScriptGenerationForRequestHelper :: {}   ",
 						ExceptionUtils.getStackTrace(exception));
 			}
+		}
+	}
+
+	@Timed
+	private void migrateDataToS3ForFilterCondition(DmuHistoryDetailEntity historyEntity) {
+		BasicSessionCredentials awsCredentials = awsConnectionService.getBasicSessionCredentials();
+		if (awsCredentials == null) {
+			historyDetailRepository.updateByRequestNoAndSrNoAndStatus(
+					historyEntity.getDmuHIstoryDetailPK().getRequestNo(),
+					historyEntity.getDmuHIstoryDetailPK().getSrNo(), DmuConstants.FAILED);
+		} else {
+			String sftcpCommand = dmuServiceHelper.buildS3MigrationUrlForFilterCondition(historyEntity, awsCredentials);
+			StringBuilder sshBuilder = new StringBuilder();
+			sshBuilder.append("ssh -i ");
+			sshBuilder.append(" ");
+			sshBuilder.append(dmuServiceHelper.getProperty(DmuConstants.HDFS_PEM_LOCATION));
+			sshBuilder.append(" ");
+			sshBuilder.append(dmuServiceHelper.getProperty(DmuConstants.HDFS_USER_NAME));
+			if (StringUtils.isNotBlank(dmuServiceHelper.getProperty(DmuConstants.HDFS_EDGE_NODE))) {
+				sshBuilder.append("@");
+				sshBuilder.append(dmuServiceHelper.getProperty(DmuConstants.HDFS_EDGE_NODE));
+				sshBuilder.append(" ");
+			} else {
+				sshBuilder.append(" ");
+			}
+			sshBuilder.append(sftcpCommand);
+			log.info(" DmuSchedulerProcessor : migrateDataToS3ssh  : ssh command => " + sshBuilder.toString());
+			try {
+				executeSSHCommand(historyEntity, sshBuilder);
+			} catch (Exception exception) {
+				historyEntity.setStatus(DmuConstants.FAILED);
+				historyDetailRepository.save(historyEntity);
+				log.error(
+						"Exception occurred at ScriptGenerationService ::  proceedScriptGenerationForRequest :: proceedScriptGenerationForRequestHelper :: {}   ",
+						ExceptionUtils.getStackTrace(exception));
+			}
+		}
+	}
+
+	private void executeSSHCommand(DmuHistoryDetailEntity historyEntity, StringBuilder sshBuilder)
+			throws IOException, InterruptedException {
+		Process process = Runtime.getRuntime().exec(sshBuilder.toString());
+		try (InputStreamReader errorStream = new InputStreamReader(process.getErrorStream());
+				BufferedReader errorBuffer = new BufferedReader(errorStream);
+				InputStreamReader inputStream = new InputStreamReader(process.getInputStream());
+				BufferedReader inputBuffer = new BufferedReader(inputStream)) {
+			log.info(" ssh command success => {}", inputBuffer.lines().collect(Collectors.joining()));
+			log.info(" ssh command error => {}", errorBuffer.lines().collect(Collectors.joining()));
+		} catch (Exception e) {
+			log.error(" ssh command error ");
+		}
+
+		int exitVal = process.waitFor();
+		if (exitVal == 0) {
+			historyEntity.setStatus(DmuConstants.SUCCESS);
+			historyDetailRepository.save(historyEntity);
+			log.info(
+					"called=> ScriptGenerationService ::  proceedScriptGenerationForRequest :: proceedScriptGenerationForRequestHelper :: hiveLocation {} :: busketName :: {} :: status => {} ",
+					historyEntity.getTargetS3Bucket(), DmuStatusConstants.HttpConstants.SUCCESS);
+		} else {
+			historyEntity.setStatus(DmuConstants.FAILED);
+			historyDetailRepository.save(historyEntity);
+			log.info(
+					"called=> ScriptGenerationService ::  proceedScriptGenerationForRequest :: proceedScriptGenerationForRequestHelper :: hiveLocation {} :: busketName :: {} :: status => {} ",
+					historyEntity.getTargetS3Bucket(), DmuStatusConstants.HttpConstants.FAILURE);
 		}
 	}
 }

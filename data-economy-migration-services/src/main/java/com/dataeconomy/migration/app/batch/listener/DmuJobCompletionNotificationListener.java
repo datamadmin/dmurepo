@@ -12,7 +12,6 @@ import org.springframework.batch.item.ExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.dataeconomy.migration.app.mysql.entity.DmuHistoryMainEntity;
 import com.dataeconomy.migration.app.mysql.repository.DmuHistoryDetailRepository;
 import com.dataeconomy.migration.app.mysql.repository.DmuHistoryMainRepository;
 import com.dataeconomy.migration.app.util.DmuConstants;
@@ -31,8 +30,6 @@ public class DmuJobCompletionNotificationListener extends JobExecutionListenerSu
 	@Autowired
 	DmuHistoryDetailRepository historyDetailRepository;
 
-	private static final String REQUEST_NO_UPDATED_WITH_STATUS = "requestNo : {} , updated with status : {} ";
-
 	@Override
 	public synchronized void afterJob(JobExecution jobExecution) {
 		log.info("Total time take in seconds : {} ",
@@ -43,52 +40,33 @@ public class DmuJobCompletionNotificationListener extends JobExecutionListenerSu
 			log.info(" => executionContext.getString() :: requestNo # {} ",
 					executionContext.getString(DmuConstants.REQUEST_NO));
 			String requestNo = executionContext.getString(DmuConstants.REQUEST_NO);
-			log.info(" BATCH JOB COMPLETED SUCCESSFULLY for REQUEST # {} ", requestNo);
-
-			Optional<DmuHistoryMainEntity> historyEntityOpt = historyMainRepository.findById(requestNo);
-
-			if (historyEntityOpt.isPresent()) {
-				DmuHistoryMainEntity historyEntity = historyEntityOpt.get();
-				historyEntity.setExctnCmpltTime(LocalDateTime.now());
+			historyMainRepository.findById(requestNo).ifPresent(historyMainEntity -> {
+				historyMainEntity.setExctnCmpltTime(LocalDateTime.now());
 				if (jobExecution.getStatus() == BatchStatus.COMPLETED) {
-					long submittedCount = historyDetailRepository.findHistoryDetailsByRequestNoAndStatus(requestNo,
-							DmuConstants.SUBMITTED);
-					log.info("Job finished with status : {} ", jobExecution.getStatus());
+					log.info("Job finished with status : {} , requestNo : {} ", jobExecution.getStatus(), requestNo);
 					if (historyDetailRepository.findHistoryDetailsByRequestNoAndStatus(requestNo,
 							DmuConstants.FAILED) > 0) {
-						log.info(REQUEST_NO_UPDATED_WITH_STATUS, requestNo, DmuConstants.FAILED);
-						if (submittedCount > 0) {
-							historyEntity.setStatus(DmuConstants.SUBMITTED);
-							historyMainRepository.save(historyEntity);
-						} else {
-							historyEntity.setStatus(DmuConstants.FAILED);
-							historyMainRepository.save(historyEntity);
-						}
+						historyMainEntity.setStatus(DmuConstants.FAILED);
+						historyMainRepository.save(historyMainEntity);
 					} else {
-						if (submittedCount > 0) {
-							historyEntity.setStatus(DmuConstants.SUBMITTED);
-							historyMainRepository.save(historyEntity);
-						} else {
-							historyEntity.setStatus(DmuConstants.SUCCESS);
-							historyMainRepository.save(historyEntity);
-						}
-						log.info(REQUEST_NO_UPDATED_WITH_STATUS, historyEntity.getRequestNo(), DmuConstants.SUCCESS);
+						historyMainEntity.setStatus(DmuConstants.SUCCESS);
+						historyMainRepository.save(historyMainEntity);
 					}
 				} else if (jobExecution.getStatus() == BatchStatus.FAILED) {
-					log.info("Job finished with status : {} ", jobExecution.getStatus());
-					log.info(REQUEST_NO_UPDATED_WITH_STATUS, historyEntity.getRequestNo(), DmuConstants.FAILED);
-					historyEntity.setStatus(DmuConstants.FAILED);
-					historyMainRepository.save(historyEntity);
+					log.info("Job finished with status : {} , requestNo : {} ", jobExecution.getStatus(), requestNo);
+					historyMainEntity.setStatus(DmuConstants.FAILED);
+					historyMainRepository.save(historyMainEntity);
 					log.info("BATCH JOB FAILED WITH EXCEPTIONS");
 					Optional.ofNullable(jobExecution.getAllFailureExceptions()).orElse(new ArrayList<>()).stream()
 							.forEach(throwable -> log.error("exception : {} ", throwable.getLocalizedMessage()));
 				}
-			}
+			});
 		}
+
 	}
 
 	@Override
-	public void beforeJob(JobExecution jobExecution) {
+	public synchronized void beforeJob(JobExecution jobExecution) {
 		startTime = System.currentTimeMillis();
 		log.info("  Job starts at : {} ", LocalDateTime.now());
 		super.beforeJob(jobExecution);

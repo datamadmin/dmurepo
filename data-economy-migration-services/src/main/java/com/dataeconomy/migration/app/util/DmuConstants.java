@@ -87,9 +87,9 @@ public final class DmuConstants {
 
 	public static final String SRC_CMPRSN_FLAG = "SRC_CMPRSN_FLAG";
 	public static final String UNCMPRSN_FLAG = "UNCMPRSN_FLAG";
-	public static final Object HADOOP_INSTALL_DIR = "HADOOP_INSTALL_DIR";
-	public static final Object GZIP_CMPRSN_FLAG = "GZIP_CMPRSN_FLAG";
-	public static final Object TEMP_HDFS_DIR = "TEMP_HDFS_DIR";
+	public static final String HADOOP_INSTALL_DIR = "HADOOP_INSTALL_DIR";
+	public static final String GZIP_CMPRSN_FLAG = "GZIP_CMPRSN_FLAG";
+	public static final String TEMP_HDFS_DIR = "TEMP_HDFS_DIR";
 	public static final String SRC_FORMAT_FLAG = "SRC_FORMAT_FLAG";
 	public static final String FILTER_CONDITION = "FILTER_CONDITION";
 	public static final String SHOW_CREATE_TABLE = "SHOW CREATE TABLE ";
@@ -98,11 +98,15 @@ public final class DmuConstants {
 	public static final String HDFS_USER_NAME = "HDFS_USER_NAME";
 	public static final String HDFS_EDGE_NODE = "HDFS_EDGE_NODE";
 	public static final String FAILURE = "Failed";
-	public static final Object CREDENTIAL_STRG_TYPE = "CREDENTIAL_STRG_TYPE";
-	public static final Object AWS_ACCESS_ID_LC = "AWS_ACCESS_ID_LC";
-	public static final Object AWS_SECRET_KEY_LC = "AWS_SECRET_KEY_LC";
+	public static final String CREDENTIAL_STRG_TYPE = "CREDENTIAL_STRG_TYPE";
+	public static final String AWS_ACCESS_ID_LC = "AWS_ACCESS_ID_LC";
+	public static final String AWS_SECRET_KEY_LC = "AWS_SECRET_KEY_LC";
 	public static final String PARALLEL_JOBS = "PARALLEL_JOBS";
 	public static final String PARALLEL_USR_RQST = "PARALLEL_USR_RQST";
 	public static final String REQUEST_NO = "requestNo";
-
+	public static final String WHERE = "WHERE";
+	public static final String SELECT_COUNT = " SELECT COUNT(*) FROM ";
+	public static final String TEMP_HIVE_DB = "TEMP_HIVE_DB";
+	public static final String UNSCRD = "UNSCRD";
+	public static final String SCRD = "SCRD";
 }

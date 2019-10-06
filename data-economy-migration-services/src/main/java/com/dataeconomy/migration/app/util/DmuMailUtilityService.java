@@ -92,7 +92,7 @@ public class DmuMailUtilityService {
 		message += "Hi <b><u>" + username
 				+ " </u></b> Your Data Migration Tool user created successfully with username:" + username + ""
 				+ "  and password:" + password + " Please reset your password using resetpassword link.<b><u>"
-				+ " </u></b>  <b>Please login using: <a href='http://datamigrationtool.us-east-2.elasticbeanstalk.com/'>http://datamigrationtool.us-east-2.elasticbeanstalk.com/</a>  <u>";
+				+ " </u></b>  <b>Please login using: <a href='http://localhost:8080/DataMigration'>http://localhost:8080/DataMigration</a>  <u>";
 		message += "</tr>";
 		message += "</tbody>";
 		message += "</table>";
@@ -146,7 +146,7 @@ public class DmuMailUtilityService {
 		message += "<tr>";
 		message += "Hi <b><u>" + username + " </u></b> Your Password For username:" + username + "" + "  is  :"
 				+ password + " <b><u>"
-				+ " </u></b>  <b>Please login using: <a href='http://datamigrationtool.us-east-2.elasticbeanstalk.com/'>http://datamigrationtool.us-east-2.elasticbeanstalk.com/</a>  <u>";
+				+ " </u></b>  <b>Please login using: <a href='http://localhost:8080/DataMigration'>http://localhost:8080/DataMigration</a>  <u>";
 		message += "</tr>";
 		message += "</tbody>";
 		message += "</table>";

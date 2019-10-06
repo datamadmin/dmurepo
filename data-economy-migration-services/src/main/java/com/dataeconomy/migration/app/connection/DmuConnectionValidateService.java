@@ -4,8 +4,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.Optional;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,21 +31,9 @@ public class DmuConnectionValidateService {
 	@Autowired
 	private DmuSparkConnectionService sparkConnectionService;
 
-	@PostConstruct
-	public void loadDriverClass() {
-		log.info(" DMUConnectionValidationService :: loadDriverClass :: initializing driver classes ");
-		/*
-		 * try { //Class.forName(DmuConstants.HIVE_DRIVER_CLASS_NAME).newInstance();
-		 * //Class.forName(DmuConstants.IMPALA_DRIVER_CLASS_NAME).newInstance(); } catch
-		 * (InstantiationException | IllegalAccessException | ClassNotFoundException e)
-		 * { log.error(
-		 * " Exception occured at DMUConnectionValidationService :: loadDriverClass :: initializing driver classes {} "
-		 * , ExceptionUtils.getStackTrace(e)); }
-		 */
-	}
-
 	public boolean validateConnectionDetails(DmuConnectionDTO connectionDto) throws DataMigrationException {
-		if (StringUtils.equalsIgnoreCase(DmuConstants.HIVE, connectionDto.getConnectionType())) {
+		if (StringUtils.equalsIgnoreCase(DmuConstants.HIVE, connectionDto.getConnectionType())
+				|| connectionDto.isHiveConnEnabled()) {
 			Optional<String> hiveConnStringOpt = hiveConnectionService.getHiveConnectionDetails(connectionDto);
 			if (hiveConnStringOpt.isPresent()) {
 				String hiveConnString = hiveConnStringOpt.get();
@@ -60,7 +46,8 @@ public class DmuConnectionValidateService {
 				throw new DataMigrationException("Invalid Connection Details for HIVE connection Validation ");
 			}
 		}
-		if (StringUtils.equalsIgnoreCase(DmuConstants.IMPALA, connectionDto.getConnectionType())) {
+		if (StringUtils.equalsIgnoreCase(DmuConstants.IMPALA, connectionDto.getConnectionType())
+				|| connectionDto.isImpalaConnEnabled()) {
 			Optional<String> impalaConnStringOpt = imaplaConnectionService.getImpalaConnectionDetails(connectionDto);
 			if (impalaConnStringOpt.isPresent()) {
 				String impalaConnString = impalaConnStringOpt.get();
@@ -73,7 +60,8 @@ public class DmuConnectionValidateService {
 				throw new DataMigrationException("Invalid Connection Details for IMPALA connection Validation ");
 			}
 		}
-		if (StringUtils.equalsIgnoreCase(DmuConstants.SPARK, connectionDto.getConnectionType())) {
+		if (StringUtils.equalsIgnoreCase(DmuConstants.SPARK, connectionDto.getConnectionType())
+				|| connectionDto.isSparkConnEnabled()) {
 			Optional<String> sparkConnStringOpt = sparkConnectionService.getSparkConnectionDetails(connectionDto);
 			if (sparkConnStringOpt.isPresent()) {
 				String sparkConnString = sparkConnStringOpt.get();

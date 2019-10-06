@@ -60,7 +60,7 @@ public class DmuUsersController {
 
 	@GetMapping("/login")
 	public DmuUsersEntity login(@RequestParam("userName") String userName, @RequestParam("password") String password) {
-		DmuUsersEntity dm = new DmuUsersEntity();
+		DmuUsersEntity dm = DmuUsersEntity.builder().build();
 		List<DmuTgtOtherPropDTO> tgoProList = tgtOtherPropService.getAllTGTOtherProp();
 		dm = userService.login(userName, Base64.getEncoder().encodeToString(password.getBytes()));
 		if (tgoProList != null && tgoProList.size() > 0
