@@ -106,5 +106,11 @@ public class DmuConnectionDTO {
 	String kerberosServiceName;
 
 	String sslKeystorePath;
+	
+	String hdfsLdapUserName;
+
+	String hdfsLdapUserPassw;
+
+	String hdfsLdapDomain;
 
 }
