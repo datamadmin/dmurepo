@@ -47,6 +47,25 @@ public class DmuReconMainService {
 			return Collections.emptyList();
 		}
 	}
+	@Timed
+	@Transactional(readOnly = true)
+	public List<DmuReconMainDTO> getAllDatabasesByUserId(String userId) {
+		log.info(" DMUReconMainService :: getDMUReconMainDetailsList ");
+		try {
+			List<DmuReconMainentity> reconDetailsList = dmuReconMainRepository.getAllDatabasesByUserId(userId);
+			return Optional.ofNullable(reconDetailsList).orElse(new ArrayList<>()).stream()
+					.map(reconObj -> DmuReconMainDTO.builder().requestNo(reconObj.getRequestNo())
+							.userId(reconObj.getUserId()).requestedTime(reconObj.getRequestedTime())
+							.status(reconObj.getStatus()).requestType(reconObj.getRequestType())
+							.reconStartTime(reconObj.getReconStartTime()).reconCmpltTime(reconObj.getReconCmpltTime())
+							.build())
+					.collect(Collectors.toList());
+		} catch (Exception exception) {
+			log.info(" Exception occured at DMUReconMainService :: getDMUReconMainDetailsList {} ",
+					ExceptionUtils.getStackTrace(exception));
+			return Collections.emptyList();
+		}
+	}
 
 	@Timed
 	@Transactional(readOnly = true)

@@ -96,7 +96,7 @@ public class DmuConnectionService {
 			} else {
 				throw new DataMigrationException("Invalid Connection Details for AWS/HDFS save details ");
 			}
-			return false;
+			throw new DataMigrationException("Invalid Connection Details for AWS/HDFS save details ");
 		} catch (Exception exception) {
 			log.info(" Exception occured at ConnectionService :: getConnectionObject :: validateConnection {} ",
 					ExceptionUtils.getStackTrace(exception));

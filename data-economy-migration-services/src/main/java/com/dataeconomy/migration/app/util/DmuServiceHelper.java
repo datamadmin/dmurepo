@@ -325,10 +325,6 @@ public class DmuServiceHelper {
 		if (dmuAuthentication.isPresent()) {
 			DmuAuthenticationEntity dmuAuthenticationObj = dmuAuthentication.get();
 			connectionDto.setAuthenticationType(dmuAuthenticationObj.getAuthenticationType());
-			if(dmuAuthenticationObj.getLdapCnctnFlag()!=null && dmuAuthenticationObj.getLdapCnctnFlag().equalsIgnoreCase(DmuConstants.YES))
-			connectionDto.setLdapCnctnFlag("LDAP");
-			if(dmuAuthenticationObj.getKerberosCnctnFlag()!=null && dmuAuthenticationObj.getKerberosCnctnFlag().equalsIgnoreCase(DmuConstants.YES))
-			connectionDto.setKerberosCnctnFlag("KERBEROS");
 			connectionDto.setHdfsLdapDomain(dmuAuthenticationObj.getLdapDomainName());
 			connectionDto.setHdfsLdapUserName(dmuAuthenticationObj.getLdapUserName());
 			connectionDto.setHdfsLdapUserPassw(dmuAuthenticationObj.getLdapPassword());
@@ -336,6 +332,16 @@ public class DmuServiceHelper {
 			connectionDto.setKerberosHostRealm(dmuAuthenticationObj.getKerberosHostRealm());
 			connectionDto.setKerberosServiceName(dmuAuthenticationObj.getSslKeystorePath());
 			connectionDto.setSslKeystorePath(dmuAuthenticationObj.getSslKeystorePath());
+			connectionDto.setLdapCnctnFlag(dmuAuthenticationObj.getLdapCnctnFlag());
+			connectionDto.setKerberosCnctnFlag(dmuAuthenticationObj.getKerberosCnctnFlag());
+			if(connectionDto.getLdapCnctnFlag()!=null && connectionDto.getLdapCnctnFlag().equalsIgnoreCase(DmuConstants.YES))
+			{
+				connectionDto.setCredentialStrgType("LDAP");
+			}
+			else if(connectionDto.getKerberosCnctnFlag()!=null && connectionDto.getKerberosCnctnFlag().equalsIgnoreCase(DmuConstants.YES))
+			{
+				connectionDto.setCredentialStrgType("KERBEROS");
+			}
 		}
 	}
 	public void saveDMUAuthenticationProperties(DmuConnectionDTO connectionDto) {
@@ -394,7 +400,7 @@ public class DmuServiceHelper {
 
 	public void populateDMUS3Properties(DmuConnectionDTO connectionDto) {
 		dmuS3Repository.findById(1L).ifPresent(dmuS3Obj -> {
-			connectionDto.setCredentialStrgType(dmuS3Obj.getCredentialStrgType());
+			
 			connectionDto.setConnectionType(dmuS3Obj.getCredentialStrgType());
 
 			connectionDto.setAwsAccessIdLc(dmuS3Obj.getAwsAccessIdLc());
@@ -413,6 +419,7 @@ public class DmuServiceHelper {
 			connectionDto.setLdapUserName(dmuS3Obj.getLdapUserName());
 			connectionDto.setLdapUserPassw(dmuS3Obj.getLdapUserPassw());
 			connectionDto.setScCrdntlAccessType(dmuS3Obj.getScCrdntlAccessType());
+			
 		});
 	}
 

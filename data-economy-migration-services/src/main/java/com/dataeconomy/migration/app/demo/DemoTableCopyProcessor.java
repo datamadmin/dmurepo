@@ -352,7 +352,7 @@ public class DemoTableCopyProcessor {
 		Optional<DmuS3Entity> dmuS3 = dmuS3Repository.findById(1L);
 		if (dmuS3.isPresent()) {
 			DmuS3Entity dmuS3Obj = dmuS3.get();
-			connectionDto.setCredentialStrgType(dmuS3Obj.getCredentialStrgType());
+			//connectionDto.setCredentialStrgType(dmuS3Obj.getCredentialStrgType());
 			connectionDto.setConnectionType(dmuS3Obj.getCredentialStrgType());
 
 			connectionDto.setAwsAccessIdLc(dmuS3Obj.getAwsAccessIdLc());

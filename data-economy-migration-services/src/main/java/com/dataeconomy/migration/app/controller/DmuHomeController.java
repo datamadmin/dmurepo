@@ -3,6 +3,7 @@ package com.dataeconomy.migration.app.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dataeconomy.migration.app.model.DmuReconAndRequestStatusDTO;
@@ -18,6 +19,10 @@ public class DmuHomeController {
 	@GetMapping("/status")
 	public DmuReconAndRequestStatusDTO getRequestAndReconStatus() {
 		return homeService.getRequestAndReconStatus();
+	}
+	@GetMapping("/statusByuserId")
+	public DmuReconAndRequestStatusDTO getRequestAndReconStatusByuserid(@RequestParam("userId") String userId) {
+		return homeService.getRequestAndReconStatusByuserid(userId);
 	}
 
 }

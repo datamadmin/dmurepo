@@ -74,7 +74,7 @@ public class DmuConnectionValidateService {
 				throw new DataMigrationException("Invalid Connection Details for SPARK connection Validation ");
 			}
 		}
-		return false;
+		throw new DataMigrationException("Invalid Connection Details");
 	}
 
 	private boolean validateConnection(String validateConnString) {

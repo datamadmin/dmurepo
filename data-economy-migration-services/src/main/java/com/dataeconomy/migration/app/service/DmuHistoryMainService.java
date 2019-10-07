@@ -50,6 +50,30 @@ public class DmuHistoryMainService {
 	}
 	@Timed
 	@Transactional(readOnly = true)
+	public List<DmuHistoryDTO> getAllHistoryDetailsByUserId(String userId) {
+		log.info(" HistoryMainService :: getAllHistoryMainDetails ");
+		try {
+			List<DmuHistoryMainEntity> dmuHistoryDetailOpt = historyMainRepository.getAllHistoryDetailsByUserId(userId);
+			return Optional.ofNullable(dmuHistoryDetailOpt).orElse(new ArrayList<>()).stream()
+					.map(dmuHistoryDetailObj -> DmuHistoryDTO.builder().requestNo(dmuHistoryDetailObj.getRequestNo())
+							.requestType(dmuHistoryDetailObj.getRequestType())
+							.userId(dmuHistoryDetailObj.getUserId())
+							.requestedTime(dmuHistoryDetailObj.getRequestedTime())
+							.status(dmuHistoryDetailObj.getStatus()).requestType(dmuHistoryDetailObj.getRequestType())
+							.scriptGenCmpltTime(dmuHistoryDetailObj.getScriptGenCmpltTime())
+							.exctnCmpltTime(dmuHistoryDetailObj.getExctnCmpltTime())
+							.tknztnEnabled(dmuHistoryDetailObj.getTknztnEnabled())
+							.tknztnFilePath(dmuHistoryDetailObj.getTknztnFilePath()).build())
+					.collect(Collectors.toList());
+		} catch (Exception exception) {
+			log.info(" Exception occured at HistoryDetailService :: getAllHistoryDetailsByReq {} ",
+					ExceptionUtils.getStackTrace(exception));
+			return Collections.emptyList();
+		}
+	}
+	
+	@Timed
+	@Transactional(readOnly = true)
 	public boolean checkLableExist(String lablename) {
 		boolean existFlag = false;
 		if(historyMainRepository.checkLableExist(lablename)!=null && historyMainRepository.checkLableExist(lablename).length()>0)

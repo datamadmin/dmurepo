@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dataeconomy.migration.app.model.DmuReconMainDTO;
@@ -26,5 +27,9 @@ public class DmuReconController {
 	@GetMapping("/all")
 	public List<DmuReconMainDTO> getAllDatabases() {
 		return dmuReconService.getDMUReconMainDetailsList();
+	}
+	@GetMapping("/byUserId")
+	public List<DmuReconMainDTO> getAllDatabasesByUserId(@RequestParam("userId") String userId) {
+		return dmuReconService.getAllDatabasesByUserId(userId);
 	}
 }

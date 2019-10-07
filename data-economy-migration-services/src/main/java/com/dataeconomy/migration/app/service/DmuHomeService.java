@@ -63,5 +63,44 @@ public class DmuHomeService {
 		}
 
 	}
+	@Timed
+	@Transactional(readOnly = true)
+	public DmuReconAndRequestStatusDTO getRequestAndReconStatusByuserid(String userId) {
+		log.info(" HomeService :: getRequestAndReconStatus ");
+		DmuReconAndRequestStatusDTO reconAndRequestStatusDto = new DmuReconAndRequestStatusDTO();
+		try {
+
+			List<DmuReconAndRequestCountProjection> reconMainCountList = dmuReconMainRepository
+					.findReconMainStatusCountByuserID(userId);
+			List<DmuReconAndRequestCountProjection> reconHistoryMainCountList = dmuHistoryMainRepository
+					.findReconHistoryStatusCountByuserID(userId);
+
+			if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(reconMainCountList)) {
+				reconMainCountList.stream().forEach(reconMainObj -> {
+					reconAndRequestStatusDto.getReconMainCount().put(reconMainObj.getStatus(), reconMainObj.getCount());
+					reconAndRequestStatusDto.setReconMainTotalCount(
+							reconAndRequestStatusDto.getReconMainTotalCount() + reconMainObj.getCount());
+				});
+			}
+
+			if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(reconHistoryMainCountList)) {
+				reconHistoryMainCountList.stream().forEach(reconMainObj -> {
+					reconAndRequestStatusDto.getReconHistoryMainCount().put(reconMainObj.getStatus(),
+							reconMainObj.getCount());
+					reconAndRequestStatusDto.setReconHistoryMainTotalCount(
+							reconAndRequestStatusDto.getReconHistoryMainTotalCount() + reconMainObj.getCount());
+				});
+			}
+
+			log.info(" HomeService ::   getRequestAndReconStatus  :: all count :: {} ", reconAndRequestStatusDto);
+			return reconAndRequestStatusDto;
+		} catch (Exception exception) {
+			log.info(" Exception occured at HomeService :: getRequestAndReconStatus {} ",
+					ExceptionUtils.getStackTrace(exception));
+			return reconAndRequestStatusDto;
+		}
+
+	}
+	
 
 }

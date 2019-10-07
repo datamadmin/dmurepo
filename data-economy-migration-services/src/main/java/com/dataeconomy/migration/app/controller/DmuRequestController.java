@@ -41,11 +41,16 @@ public class DmuRequestController {
 	public List<DmuBasketDTO> getAllTablesForGivenDatabase(@PathVariable(name = "databaseName") String databaseName) {
 		return dmuRequestService.getAllTablesForGivenDatabase(databaseName);
 	}
-	@PostMapping("/checkLableExist")
-	public void checkLableExist(@RequestParam("lableName") String lableName) throws Exception {
+	@GetMapping("/checkLableExist")
+	public boolean checkLableExist(@RequestParam("lableName") String lableName) throws Exception {
+		System.out.println("**lableName***"+lableName);
 		boolean existFlasg = historyMainService.checkLableExist(lableName);
 		if (existFlasg) {
 			throw new Exception("Same Lable Name Already Exist!");
+		}
+		else
+		{
+			return true;
 		}
 	}
 

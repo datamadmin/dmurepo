@@ -2,10 +2,7 @@ package com.dataeconomy.migration.app.mysql.repository;
 
 import java.util.List;
 
-import javax.persistence.LockModeType;
-
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -26,7 +23,10 @@ public interface DmuHistoryMainRepository extends JpaRepository<DmuHistoryMainEn
 
 	@Query("select new com.dataeconomy.migration.app.mysql.entity.DmuReconAndRequestCountProjection(v.status , count(v) as cnt) from DmuHistoryMainEntity v group by v.status")
 	public List<DmuReconAndRequestCountProjection> findReconHistoryStatusCount(); 
-
+	
+	@Query("select new com.dataeconomy.migration.app.mysql.entity.DmuReconAndRequestCountProjection(v.status , count(v) as cnt) from DmuHistoryMainEntity v where v.userId = :userId group by v.status")
+	public List<DmuReconAndRequestCountProjection> findReconHistoryStatusCountByuserID(@Param("userId") String userId); 
+	
 	@Query("SELECT COUNT(u.status) FROM DmuHistoryMainEntity u WHERE u.status=:statusValue")
 	Long getTaskDetailsCount(@Param("statusValue") String statusValue);
 
@@ -44,5 +44,8 @@ public interface DmuHistoryMainRepository extends JpaRepository<DmuHistoryMainEn
 	
 	@Query(" SELECT u.requestNo FROM DmuHistoryMainEntity u  WHERE u.requestNo = :lablename")
 	String checkLableExist(@Param("lablename") String lablename);
-
+	
+	@Query("select history from DmuHistoryMainEntity history where history.userId = :userId ORDER BY history.requestedTime ASC")
+	List<DmuHistoryMainEntity> getAllHistoryDetailsByUserId(@Param("userId") String userId);
+	
 }
