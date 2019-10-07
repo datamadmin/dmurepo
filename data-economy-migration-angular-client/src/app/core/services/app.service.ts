@@ -45,9 +45,13 @@ export class AppService {
         return this.http.get(`${environment.apiUrl}/users/delete`, { params });
     }
 
-    resetPassword(password: any) {
+    resetPassword(password: any,selectedUserId:any) {
+       if(selectedUserId==null || selectedUserId.length==0)
+       {
+        selectedUserId = this.getCurrentUserId();
+       }
         const params = {
-            "id": this.getCurrentUserId(),
+            "id": selectedUserId,
             "password": password
         }
         return this.http.get(`${environment.apiUrl}/users/resetPassword`, { params });
@@ -67,7 +71,17 @@ export class AppService {
     }
 
     getHistoryMainList() {
+        if(this.authenticationService.currentUser()["userRole"] === 'Admin' ? true : false)
+        {
         return this.http.get(`${environment.apiUrl}/history/main/all`);
+        }
+        else
+        {
+        const params = {
+            "userId": this.authenticationService.currentUser()["userName"]
+        }
+        return this.http.get(`${environment.apiUrl}/history/main/byUserId`, { params });
+    }
     }
 
     getHistoryDetailsById(requestNo: any) {
@@ -78,7 +92,19 @@ export class AppService {
     }
 
     getReconMainList() {
-        return this.http.get(`${environment.apiUrl}/recon/all`);
+        
+       
+        if(this.authenticationService.currentUser()["userRole"] === 'Admin' ? true : false)
+        {
+            return this.http.get(`${environment.apiUrl}/recon/all`);
+        }
+        else
+        {
+        const params = {
+            "userId": this.authenticationService.currentUser()["userName"]
+        }
+        return this.http.get(`${environment.apiUrl}/recon/byUserId`, { params });
+    }
     }
 
     getReconDetailsById(requestNo: any) {
@@ -138,7 +164,18 @@ export class AppService {
     }
 
     getHomeScreenData() {
-        return this.http.get(`${environment.apiUrl}/home/status`);
+        if(this.authenticationService.currentUser()["userRole"] === 'Admin' ? true : false)
+        {
+            return this.http.get(`${environment.apiUrl}/home/status`);
+        }
+        else
+        {
+        const params = {
+            "userId": this.authenticationService.currentUser()["userName"]
+        }
+        return this.http.get(`${environment.apiUrl}/home/statusByuserId`, { params });
+    }
+        
     }
     checkLableExist(lableName: any) {
         const params = {

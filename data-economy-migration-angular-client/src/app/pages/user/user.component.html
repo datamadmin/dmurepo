@@ -35,11 +35,14 @@
                                         {{rowData[col.field]}}
                                     </td>
                                     <td>
-                                        <button class="btn btn-xs btn-info mr-2" (click)="showUpdateUser(rowData)">
+                                        <button class="btn btn-xs btn-info mr-2" (click)="showUpdateUser(rowData)" title="Click here to edit selected user">
                                             <i class="fas fa-edit"></i>
                                         </button>
-                                        <button class="btn  btn-xs btn-danger" (click)="showDeleteUser(rowData)">
+                                        <button class="btn  btn-xs btn-danger mr-2" (click)="showDeleteUser(rowData)" title="Click here to delete selected user">
                                             <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                        <button class="btn  btn-xs btn-primary" (click)="resetPassword(rowData)" title="Click here to reset password for selected user">
+                                            <i class="fas fa-key"></i>
                                         </button>
                                     </td>
                                 </tr>

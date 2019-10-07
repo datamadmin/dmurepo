@@ -236,10 +236,21 @@ export class RequestComponent implements OnInit {
             }
         });
     }
-
+    checkLableExist()
+    {
+        this.appService.checkLableExist(this.requestModel.labelName).subscribe(
+            (res: any) => {
+                if (res.length > 0) {
+                  return true;
+                }
+            },
+            (error) => {
+                this.notificationService.showError(error || "Error while saving request info");
+            });
+    return false;
+    }
     onContinueFunction() {
-        if (this.validateRequestModel()) {
-            this.appService.checkLableExist(this.requestModel.labelName);
+        if (this.validateRequestModel() && this.checkLableExist()) {
             switch (this.activeTabIndex) {
                 case 0:
                     this.requestModel.requestType = REQUEST_TYPE.HIVE_TO_S3;

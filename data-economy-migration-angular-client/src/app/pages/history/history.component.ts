@@ -58,7 +58,7 @@ export class HistoryComponent implements OnInit, AfterViewInit {
 
         if (this.isTokenizationEnabled) {
             this.masterCols = [
-                { field: 'requestNo', header: 'Request No' },
+                { field: 'requestNo', header: 'Lable Name' },
                 { field: 'userId', header: 'Requested By' },
                 { field: 'requestedTime', header: 'Requested Time' },
                 { field: 'tknztnEnabled', header: 'Tokenization Enabled' },
@@ -70,7 +70,7 @@ export class HistoryComponent implements OnInit, AfterViewInit {
         }
         else {
             this.masterCols = [
-                { field: 'requestNo', header: 'Request No' },
+                { field: 'requestNo', header: 'Lable Name' },
                 { field: 'userId', header: 'Requested By' },
                 { field: 'requestedTime', header: 'Requested Time' },
                 { field: 'status', header: 'Status' },

@@ -55,7 +55,7 @@ export class ReconComponent implements OnInit {
 
 
     this.masterCols = [
-      { field: 'requestNo', header: 'Request No' },
+      { field: 'requestNo', header: 'Lable Name' },
       { field: 'userId', header: 'Requested By' },
       { field: 'requestedTime', header: 'Requested Time' },
       { field: 'status', header: 'Recon Status' },

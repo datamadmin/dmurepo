@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { NotificationService } from 'src/app/core/services/notification.service';
 import { AppService } from 'src/app/core/services/app.service';
-
+import { ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 @Component({
     selector: 'app-change-password',
     templateUrl: './change-password.component.html',
@@ -12,17 +13,26 @@ import { AppService } from 'src/app/core/services/app.service';
 export class ChangePasswordComponent implements OnInit {
 
     breadCrumbItems: Array<{}>;
+    selectedUserId: any;
 
     changePasswordModel: any = {
         "newPassword": "",
         "confirmPassword": ""
     }
 
-    constructor(private notificationService: NotificationService, private appService: AppService) { }
+    constructor(private notificationService: NotificationService, 
+        private appService: AppService,
+        private router: Router,
+        private route: ActivatedRoute) { 
+    }
 
     ngOnInit() {
         this.breadCrumbItems = [{ label: 'Home', path: '/app/home' }, { label: 'Settings', active: true }, { label: 'Change Password', active: true }];
-
+        this.route.queryParams
+        .filter(params => params.selectedUserId)
+        .subscribe(params => {
+            this.selectedUserId = params["selectedUserId"] || "";
+        });
     }
 
     clearChangePasswordModel() {
@@ -53,12 +63,13 @@ export class ChangePasswordComponent implements OnInit {
     }
     updateClickFunction() {
         if (this.validateFormData()) {
-            this.appService.resetPassword(this.changePasswordModel.newPassword)
+            this.appService.resetPassword(this.changePasswordModel.newPassword,this.selectedUserId)
                 .subscribe(
                     res => {
                         if (res) {
                             this.clearChangePasswordModel();
                             this.notificationService.showSuccess('Password changed successfully');
+                            this.router.navigate(['/app/home']);
                         }
                         else {
                             this.notificationService.showError('Error while changing the password');
