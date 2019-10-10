@@ -32,6 +32,10 @@ public class DmuConnectionValidateService {
 	private DmuSparkConnectionService sparkConnectionService;
 
 	public boolean validateConnectionDetails(DmuConnectionDTO connectionDto) throws DataMigrationException {
+		if(connectionDto.getAuthenticationType()!=null && connectionDto.getAuthenticationType().equalsIgnoreCase(DmuConstants.SECURED))
+		{
+			throw new DataMigrationException("Connection Failed! Invalid HDFS Connection Details with Secured Connection");	
+		}
 		if (StringUtils.equalsIgnoreCase(DmuConstants.HIVE, connectionDto.getConnectionType())
 				|| connectionDto.isHiveConnEnabled()) {
 			Optional<String> hiveConnStringOpt = hiveConnectionService.getHiveConnectionDetails(connectionDto);
