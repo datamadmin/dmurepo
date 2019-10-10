@@ -89,50 +89,47 @@ public class DmuBatchScheduler implements SchedulingConfigurer {
 		long inProgressCount = historyMainRepository.getTaskDetailsCount(DmuConstants.IN_PROGRESS);
 		log.info(" => DmuBatchScheduler : inProgressCount : {} , noOfParallelusers: {} , noOfParallelJobs : {} ",
 				inProgressCount, noOfParallelusers, noOfParallelJobs);
-		if (inProgressCount < noOfParallelusers) {
+		//if (inProgressCount < noOfParallelusers) {
 			long taskSubmittedCount = historyMainRepository.getTaskDetailsCount(DmuConstants.SUBMITTED);
+			log.info(" DmuBatchScheduler : taskSubmittedCount : {} ", taskSubmittedCount);
 			if (taskSubmittedCount > 0) {
-
 				long limitCount = ((noOfParallelusers - inProgressCount) > taskSubmittedCount) ? taskSubmittedCount
 						: (noOfParallelusers - inProgressCount);
-
-				log.info(" DmuBatchScheduler : taskSubmittedCount : {} ", taskSubmittedCount);
-				log.info(" DmuBatchScheduler : noOfUsers thread count  : {} ", limitCount);
+				log.info(" DmuBatchScheduler :  limitCount : {}  ", taskSubmittedCount, limitCount);
 				log.info("Job Started at : {} ", dateTimeFormatter.format(LocalDateTime.now()));
 				Optional.ofNullable(
 						historyMainRepository.findHistoryMainDetailsByStatusScheduler(DmuConstants.SUBMITTED))
-						.ifPresent(
-								entityList -> entityList.parallelStream().limit(limitCount).forEach(historyEntity -> {
-									historyMainRepository.updateForRequestNo(historyEntity.getRequestNo(),
-											DmuConstants.IN_PROGRESS);
-									try {
-										log.info("current thread {} executing the requestNo {} ",
-												Thread.currentThread().getName(), historyEntity.getRequestNo());
-										JobExecution jobExecution = jobLauncher.run(job, new JobParametersBuilder()
-												.addString("requestNo", historyEntity.getRequestNo())
+						.ifPresent(entityList -> entityList.stream().limit(limitCount).forEach(historyEntity -> {
+							historyMainRepository.updateForRequestNo(historyEntity.getRequestNo(),
+									DmuConstants.IN_PROGRESS);
+							try {
+								Thread.currentThread().setName("Thread-" + historyEntity.getRequestNo());
+								log.info("current thread {} executing the requestNo {} ",
+										Thread.currentThread().getName(), historyEntity.getRequestNo());
+								JobExecution jobExecution = jobLauncher.run(job,
+										new JobParametersBuilder().addString("requestNo", historyEntity.getRequestNo())
 												.addLong("parallelJobs", getJobCount(historyEntity.getRequestNo()))
 												.addString("name",
 														historyEntity.getRequestNo() + " -" + historyEntity.getUserId())
 												.addDate("date", new Date()).addLong("time", System.currentTimeMillis())
 												.toJobParameters());
-										log.info("Job started with name, time : {} , finished with time  {} ",
-												jobExecution.getJobConfigurationName(), jobExecution.getCreateTime(),
-												jobExecution.getEndTime());
-									} catch (Exception e) {
-										log.error(" => Exception occured at DmuBatchScheduler :: {} ",
-												ExceptionUtils.getStackTrace(e));
-										historyMainRepository.updateForRequestNo(historyEntity.getRequestNo(),
-												DmuConstants.FAILED);
-									}
-								}));
+								log.info("Job started with name, time : {} , finished with time  {} ",
+										jobExecution.getJobConfigurationName(), jobExecution.getCreateTime(),
+										jobExecution.getEndTime());
+							} catch (Exception e) {
+								log.error(" => Exception occured at DmuBatchScheduler :: {} ",
+										ExceptionUtils.getStackTrace(e));
+								historyMainRepository.updateForRequestNo(historyEntity.getRequestNo(),
+										DmuConstants.FAILED);
+							}
+						}));
 			} else {
 				log.info(" DmuBatchScheduler : no tasks submitted for scheduler ");
 			}
-		} else {
-			log.info(
-					" DmuBatchScheduler : inProgressCount : {} Job not executed due to numbers users requests limit exceeded => {} ",
+		//} else {
+			log.info(" DmuBatchScheduler : Job not executed due to number of users limit => {} exceeded => {} ",
 					inProgressCount);
-		}
+		//}
 	}
 
 	@Bean
@@ -152,7 +149,7 @@ public class DmuBatchScheduler implements SchedulingConfigurer {
 		list.add(requestNo);
 		list.add(DmuConstants.SUBMITTED);
 		historyDetailsRepositoryReader.setArguments(list);
-		HashMap<String, Sort.Direction> sorts = new HashMap<>(); 
+		HashMap<String, Sort.Direction> sorts = new HashMap<>();
 		sorts.put("dmuHIstoryDetailPK.requestNo", Direction.ASC);
 		int noOfThreads = Math.toIntExact(getJobCount(requestNo));
 		log.info(" RepositoryItemReader processing with records count {} ", noOfThreads);
@@ -166,14 +163,14 @@ public class DmuBatchScheduler implements SchedulingConfigurer {
 			DmuSchedulerJdbcWriter stepWriter, DmuStepExecutionNotificationListener stepListener,
 			RepositoryItemReader<DmuHistoryDetailEntity> reader, TaskExecutor taskExecutor,
 			DmuItemReaderListener dmuItemReaderListener) {
-		return stepBuilderFactory.get("step1").<DmuHistoryDetailEntity, DmuHistoryDetailEntity>chunk(1).reader(reader)
-				.processor(schedulerProcessor).chunk(1).writer(stepWriter).listener(stepListener)
-				.listener(dmuItemReaderListener).taskExecutor(taskExecutor).throttleLimit(30).build();
+		return stepBuilderFactory.get("step1").<DmuHistoryDetailEntity, DmuHistoryDetailEntity>chunk(10).reader(reader)
+				.processor(schedulerProcessor).writer(stepWriter).listener(stepListener).listener(dmuItemReaderListener)
+				.taskExecutor(taskExecutor).throttleLimit(20).build();
 	}
 
 	@Bean
 	public TaskExecutor taskExecutor() {
-		SimpleAsyncTaskExecutor taskExecutor = new SimpleAsyncTaskExecutor();
+		SimpleAsyncTaskExecutor taskExecutor = new SimpleAsyncTaskExecutor("DmmuScheduler-TaskExecutor");
 		taskExecutor.setConcurrencyLimit(30);
 		return taskExecutor;
 	}

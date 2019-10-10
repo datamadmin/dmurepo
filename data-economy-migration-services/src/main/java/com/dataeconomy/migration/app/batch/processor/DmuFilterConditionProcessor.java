@@ -42,7 +42,7 @@ public class DmuFilterConditionProcessor {
 	DmuAwsConnectionService awsConnectionService;
 
 	@Timed
-	synchronized void processFilterCondition(DmuHistoryDetailEntity dmuHistoryDetail) {
+	void processFilterCondition(DmuHistoryDetailEntity dmuHistoryDetail) {
 		log.info(" called=> DmuFilterConditionProcessor ::  invokeHDFSServiceForFilterCondition  ");
 		ResultSet resultSet = null;
 		try (Connection conn = hdfsConnectionService.getValidDataSource(DmuConstants.SMALLQUERY).getConnection();

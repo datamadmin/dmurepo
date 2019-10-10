@@ -9,6 +9,8 @@ import java.sql.Statement;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.transaction.Transactional;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.batch.core.configuration.annotation.StepScope;
@@ -50,14 +52,17 @@ public class DmuSchedulerProcessor implements ItemProcessor<DmuHistoryDetailEnti
 
 	@Override
 	@Timed
-	public synchronized DmuHistoryDetailEntity process(DmuHistoryDetailEntity dmuHistoryDetailEntity) throws Exception {
-		log.info(" dmuHistoryDetailEntity : requestNo : {} , srNo : status : {}", dmuHistoryDetailEntity.getStatus());
-		log.info(" dmuHistoryDetailEntity :: requestNo : {} ",
-				dmuHistoryDetailEntity.getDmuHIstoryDetailPK().getRequestNo());
-		log.info(" dmuHistoryDetailEntity :: srNo : {} ", dmuHistoryDetailEntity.getDmuHIstoryDetailPK().getSrNo());
+	@Transactional
+	public DmuHistoryDetailEntity process(DmuHistoryDetailEntity dmuHistoryDetailEntity) throws Exception {
+		log.info(" DmuSchedulerProcessor =>  : Thread {} processing with requestNo : {} , srNo {} : status : {}",
+				Thread.currentThread().getName(), dmuHistoryDetailEntity.getDmuHIstoryDetailPK().getRequestNo(),
+				dmuHistoryDetailEntity.getDmuHIstoryDetailPK().getSrNo(), dmuHistoryDetailEntity.getStatus());
 		try {
-			historyDetailRepository.updateForRequestNo(dmuHistoryDetailEntity.getDmuHIstoryDetailPK().getRequestNo(),
-					dmuHistoryDetailEntity.getDmuHIstoryDetailPK().getSrNo());
+
+			historyDetailRepository.updateByRequestNoAndSrNoAndStatus(
+					dmuHistoryDetailEntity.getDmuHIstoryDetailPK().getRequestNo(),
+					dmuHistoryDetailEntity.getDmuHIstoryDetailPK().getSrNo(), DmuConstants.IN_PROGRESS);
+
 			if (StringUtils.isBlank(dmuHistoryDetailEntity.getFilterCondition())
 					&& StringUtils.equalsIgnoreCase(DmuConstants.NO, dmuHistoryDetailEntity.getIncrementalFlag())
 					&& StringUtils.equalsIgnoreCase(DmuConstants.YES,
@@ -65,17 +70,15 @@ public class DmuSchedulerProcessor implements ItemProcessor<DmuHistoryDetailEnti
 				getHdfsPath(dmuHistoryDetailEntity)
 						.ifPresent(hdfsPath -> migrateDataToS3(dmuHistoryDetailEntity, hdfsPath));
 			} else if (StringUtils.equalsIgnoreCase(DmuConstants.YES, dmuHistoryDetailEntity.getIncrementalFlag())) {
-				historyDetailRepository.updateByRequestNoAndSrNoAndStatus(
-						dmuHistoryDetailEntity.getDmuHIstoryDetailPK().getRequestNo(),
-						dmuHistoryDetailEntity.getDmuHIstoryDetailPK().getSrNo(), DmuConstants.NEW_SCENARIO);
+				dmuHistoryDetailEntity.setStatus(DmuConstants.NEW_SCENARIO);
+				historyDetailRepository.save(dmuHistoryDetailEntity);
 			} else if (StringUtils.isNotBlank(dmuHistoryDetailEntity.getFilterCondition()) && StringUtils
 					.equalsIgnoreCase(DmuConstants.YES, dmuServiceHelper.getProperty(DmuConstants.SRC_FORMAT_FLAG))) {
 				dmuFilterConditionProcessor.processFilterCondition(dmuHistoryDetailEntity);
 				migrateDataToS3ForFilterCondition(dmuHistoryDetailEntity);
 			} else {
-				historyDetailRepository.updateByRequestNoAndSrNoAndStatus(
-						dmuHistoryDetailEntity.getDmuHIstoryDetailPK().getRequestNo(),
-						dmuHistoryDetailEntity.getDmuHIstoryDetailPK().getSrNo(), DmuConstants.UNKNOWN_CASE);
+				dmuHistoryDetailEntity.setStatus(DmuConstants.UNKNOWN_CASE);
+				historyDetailRepository.save(dmuHistoryDetailEntity);
 			}
 		} catch (Exception exception) {
 			log.info(" Exception occured at DmuSchedulerProcessor :: process {} ",
@@ -88,7 +91,7 @@ public class DmuSchedulerProcessor implements ItemProcessor<DmuHistoryDetailEnti
 	}
 
 	@Timed
-	public Optional<String> getHdfsPath(DmuHistoryDetailEntity historyEntity) {
+	public synchronized Optional<String> getHdfsPath(DmuHistoryDetailEntity historyEntity) {
 		log.info(" executing => DmuSchedulerProcessor ::  getHdfsPath :: schemaName => {} , tableName => {} ",
 				historyEntity.getSchemaName(), historyEntity.getTableName());
 
