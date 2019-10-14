@@ -28,6 +28,7 @@ export class RequestComponent implements OnInit {
     tokenizationFilePathRecords: any = [];
 
     activeTabIndex: number;
+    checkflag: boolean;
     isTokenizationEnabled: any;
 
     requestModel = {
@@ -100,6 +101,7 @@ export class RequestComponent implements OnInit {
         csvRecordsArray.forEach((row, index) => {
             if (index > 0) {
                 let data = row.split(',');
+                console.log("inr col**" + data[6]);
                 if (data.length == headerLength) {
                     let csvRecord = {
                         srNo: data[0],
@@ -236,66 +238,60 @@ export class RequestComponent implements OnInit {
             }
         });
     }
-    checkLableExist()
-    {
-        this.appService.checkLableExist(this.requestModel.labelName).subscribe(
-            (res: any) => {
-                if (res.length > 0) {
-                  return true;
-                }
-            },
-            (error) => {
-                this.notificationService.showError(error || "Error while saving request info");
-            });
-    return false;
-    }
     onContinueFunction() {
-        if (this.validateRequestModel() && this.checkLableExist()) {
-            switch (this.activeTabIndex) {
-                case 0:
-                    this.requestModel.requestType = REQUEST_TYPE.HIVE_TO_S3;
-                    break;
-                case 1:
-                    this.requestModel.requestType = REQUEST_TYPE.TERADATA_TO_S3;
-                    break;
-                case 2:
-                    this.requestModel.requestType = REQUEST_TYPE.TERADATA_TO_RED_SHIFT;
-                    break;
-                case 3:
-                    this.requestModel.requestType = REQUEST_TYPE.TERADATA_TO_SNOWFLAKE;
-                    break;
-                default:
-                    break;
-            }
-
-            if (this.requestModel.migrationType == MIGRATION_TYPE.FULL_DATABASE) {
-                this.appService.getRequestPreviewData(this.requestModel).subscribe(
-                    (res: any) => {
-                        if (res.length > 0) {
-                            this.appService.requestModel = this.requestModel;
-                            this.appService.requestPreviewList = res;
-                            this.router.navigate(['/app/request/preview']);
+        if (this.validateRequestModel()) {
+            this.appService.checkLableExist(this.requestModel.labelName).subscribe(
+                res => {
+                    if (res) {
+                        switch (this.activeTabIndex) {
+                            case 0:
+                                this.requestModel.requestType = REQUEST_TYPE.HIVE_TO_S3;
+                                break;
+                            case 1:
+                                this.requestModel.requestType = REQUEST_TYPE.TERADATA_TO_S3;
+                                break;
+                            case 2:
+                                this.requestModel.requestType = REQUEST_TYPE.TERADATA_TO_RED_SHIFT;
+                                break;
+                            case 3:
+                                this.requestModel.requestType = REQUEST_TYPE.TERADATA_TO_SNOWFLAKE;
+                                break;
+                            default:
+                                break;
                         }
-                        else {
-                            this.notificationService.showError("No data found for the selected database");
-                        }
-                    },
-                    (error) => {
-                        this.notificationService.showError(error || "Error while saving request info");
-                    });
-            }
-            else if (this.requestModel.migrationType == MIGRATION_TYPE.LIST_OF_TABLE_FROM_FILE) {
-                if (this.filePathRecords.length > 0) {
-                    this.requestModel.targetS3Bucket = this.filePathRecords[0]["targetS3Bucket"]
-                    this.appService.requestModel = this.requestModel;
-                    this.appService.requestPreviewList = this.filePathRecords;
-                    this.router.navigate(['/app/request/preview']);
-                }
-                else {
-                    this.notificationService.showError("No data found for the selected file path");
-                }
-            }
 
+                        if (this.requestModel.migrationType == MIGRATION_TYPE.FULL_DATABASE) {
+                            this.appService.getRequestPreviewData(this.requestModel).subscribe(
+                                (res: any) => {
+                                    if (res.length > 0) {
+                                        this.appService.requestModel = this.requestModel;
+                                        this.appService.requestPreviewList = res;
+                                        this.router.navigate(['/app/request/preview']);
+                                    }
+                                    else {
+                                        this.notificationService.showError("No data found for the selected database");
+                                    }
+                                },
+                                (error) => {
+                                    this.notificationService.showError(error || "Error while saving request info");
+                                });
+                        }
+                        else if (this.requestModel.migrationType == MIGRATION_TYPE.LIST_OF_TABLE_FROM_FILE) {
+                            if (this.filePathRecords.length > 0) {
+                                this.requestModel.targetS3Bucket = this.filePathRecords[0]["targetS3Bucket"]
+                                this.appService.requestModel = this.requestModel;
+                                this.appService.requestPreviewList = this.filePathRecords;
+                                this.router.navigate(['/app/request/preview']);
+                            }
+                            else {
+                                this.notificationService.showError("No data found for the selected file path");
+                            }
+                        }
+                    }
+                },
+                (error) => {
+                    this.notificationService.showError(error || "Error while saving request info");
+                });
         }
     }
 }

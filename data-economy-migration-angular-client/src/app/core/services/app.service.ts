@@ -45,11 +45,10 @@ export class AppService {
         return this.http.get(`${environment.apiUrl}/users/delete`, { params });
     }
 
-    resetPassword(password: any,selectedUserId:any) {
-       if(selectedUserId==null || selectedUserId.length==0)
-       {
-        selectedUserId = this.getCurrentUserId();
-       }
+    resetPassword(password: any, selectedUserId: any) {
+        if (selectedUserId == null || selectedUserId.length == 0) {
+            selectedUserId = this.getCurrentUserId();
+        }
         const params = {
             "id": selectedUserId,
             "password": password
@@ -71,17 +70,15 @@ export class AppService {
     }
 
     getHistoryMainList() {
-        if(this.authenticationService.currentUser()["userRole"] === 'Admin' ? true : false)
-        {
-        return this.http.get(`${environment.apiUrl}/history/main/all`);
+        if (this.authenticationService.currentUser()["userRole"] === 'Admin' ? true : false) {
+            return this.http.get(`${environment.apiUrl}/history/main/all`);
         }
-        else
-        {
-        const params = {
-            "userId": this.authenticationService.currentUser()["userName"]
+        else {
+            const params = {
+                "userId": this.authenticationService.currentUser()["userName"]
+            }
+            return this.http.get(`${environment.apiUrl}/history/main/byUserId`, { params });
         }
-        return this.http.get(`${environment.apiUrl}/history/main/byUserId`, { params });
-    }
     }
 
     getHistoryDetailsById(requestNo: any) {
@@ -92,19 +89,17 @@ export class AppService {
     }
 
     getReconMainList() {
-        
-       
-        if(this.authenticationService.currentUser()["userRole"] === 'Admin' ? true : false)
-        {
+
+
+        if (this.authenticationService.currentUser()["userRole"] === 'Admin' ? true : false) {
             return this.http.get(`${environment.apiUrl}/recon/all`);
         }
-        else
-        {
-        const params = {
-            "userId": this.authenticationService.currentUser()["userName"]
+        else {
+            const params = {
+                "userId": this.authenticationService.currentUser()["userName"]
+            }
+            return this.http.get(`${environment.apiUrl}/recon/byUserId`, { params });
         }
-        return this.http.get(`${environment.apiUrl}/recon/byUserId`, { params });
-    }
     }
 
     getReconDetailsById(requestNo: any) {
@@ -139,7 +134,10 @@ export class AppService {
     }
 
     getAllBasketItems(): any {
-        return this.http.get(`${environment.apiUrl}/basket/all`);
+        const params = {
+            'userId': this.getCurrentUserName()
+        };
+        return this.http.get(`${environment.apiUrl}/basket/getBasketDetailsByUserId`, { params });
     }
 
     saveBasketData(basketList: any) {
@@ -164,18 +162,16 @@ export class AppService {
     }
 
     getHomeScreenData() {
-        if(this.authenticationService.currentUser()["userRole"] === 'Admin' ? true : false)
-        {
+        if (this.authenticationService.currentUser()["userRole"] === 'Admin' ? true : false) {
             return this.http.get(`${environment.apiUrl}/home/status`);
         }
-        else
-        {
-        const params = {
-            "userId": this.authenticationService.currentUser()["userName"]
+        else {
+            const params = {
+                "userId": this.authenticationService.currentUser()["userName"]
+            }
+            return this.http.get(`${environment.apiUrl}/home/statusByuserId`, { params });
         }
-        return this.http.get(`${environment.apiUrl}/home/statusByuserId`, { params });
-    }
-        
+
     }
     checkLableExist(lableName: any) {
         const params = {

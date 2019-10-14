@@ -43,9 +43,15 @@ export class RequestPreviewComponent implements OnInit, OnDestroy {
             this.previewList.forEach((item: any) => {
                 item["targetS3Bucket"] = this.requestModel["targetS3Bucket"];
                 item["incrementalFlag"] = item["incrementalFlag"] == 'Y' ? true : false;
-                item["incrementalClmn"] = null;
+                item["incrementalClmn"] = item["incrementalClmn"];
                 item["labelName"] = this.requestModel["labelName"];
-                item["targetS3Bucket"] = item["targetS3Bucket"] + "/" + item["tableName"];
+                if (this.requestModel.migrationType == MIGRATION_TYPE.LIST_OF_TABLE_FROM_FILE) {
+                    item["targetS3Bucket"] = item["targetS3Bucket"];
+                }
+                else {
+                    item["targetS3Bucket"] = item["targetS3Bucket"] + "/" + item["tableName"];
+                }
+
             });
 
             if (this.requestModel.migrationType == MIGRATION_TYPE.LIST_OF_TABLE_FROM_FILE) {
