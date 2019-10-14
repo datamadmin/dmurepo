@@ -24,7 +24,6 @@ public class DmuHistoryMainController {
 	}
 	@GetMapping("/byUserId")
 	public List<DmuHistoryDTO> getAllHistoryDetailsByUserId(@RequestParam("userId") String userId) {
-		System.out.println("***********"+userId);
 		return historyMainService.getAllHistoryDetailsByUserId(userId);
 	}
 }

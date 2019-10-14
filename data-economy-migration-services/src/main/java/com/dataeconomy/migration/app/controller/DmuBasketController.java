@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.dataeconomy.migration.app.exception.DataMigrationException;
 import com.dataeconomy.migration.app.model.DmuBasketDTO;
+import com.dataeconomy.migration.app.model.DmuHistoryDTO;
 import com.dataeconomy.migration.app.service.DmuBasketService;
 
 @RestController
@@ -66,5 +67,9 @@ public class DmuBasketController {
 	public List<DmuBasketDTO> getBasketDetailsBySearchParam(
 			@RequestParam(value = "searchParam", required = true) String searchParam) throws DataMigrationException {
 		return dmuBasketService.getBasketDetailsBySearchParam(searchParam);
+	}
+	@GetMapping("/getBasketDetailsByUserId")
+	public List<DmuBasketDTO> getBasketDetailsByUserId(@RequestParam("userId") String userId) {
+		return dmuBasketService.getBasketDetailsByUserId(userId);
 	}
 }

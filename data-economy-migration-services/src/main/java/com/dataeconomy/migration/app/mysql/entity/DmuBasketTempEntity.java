@@ -41,5 +41,8 @@ public class DmuBasketTempEntity {
 
 	@Column(name = "INCREMENTAL_CLMN", length = 100, nullable = true)
 	private String incrementalClmn;
+	
+	@Column(name = "REQUEST_TYPE", length = 100, nullable = true)
+	private String requestType;
 
 }

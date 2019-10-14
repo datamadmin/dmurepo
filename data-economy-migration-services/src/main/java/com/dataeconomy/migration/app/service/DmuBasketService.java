@@ -69,7 +69,9 @@ public class DmuBasketService {
 	public List<DmuBasketDTO> getAllBasketDetails() {
 		return Optional.ofNullable(basketTempRepository.findAll()).orElse(new ArrayList<>()).stream()
 				.map(basketObj -> DmuBasketDTO.builder().srNo(basketObj.getDmuBasketTempId().getSrNo())
-						.userId(basketObj.getDmuBasketTempId().getUserId()).schemaName(basketObj.getSchemaName())
+						.userId(basketObj.getDmuBasketTempId().getUserId())
+						.requestType(basketObj.getRequestType())
+						.schemaName(basketObj.getSchemaName())
 						.tableName(basketObj.getTableName()).filterCondition(basketObj.getFilterCondition())
 						.targetS3Bucket(basketObj.getTargetS3Bucket()).incrementalFlag(basketObj.getIncrementalFlag())
 						.incrementalClmn(basketObj.getIncrementalClmn())
@@ -90,6 +92,7 @@ public class DmuBasketService {
 						.filterCondition(dmuBasketDto.getFilterCondition())
 						.targetS3Bucket(dmuBasketDto.getTargetS3Bucket())
 						.incrementalFlag(dmuBasketDto.getIncrementalFlag())
+						.requestType(dmuBasketDto.getRequestType())
 						.incrementalClmn(dmuBasketDto.getIncrementalClmn()).build())
 				.collect(Collectors.toList());
 
@@ -178,7 +181,9 @@ public class DmuBasketService {
 		return Optional.ofNullable(basketTempRepository.findAllByOrderByDmuBasketTempIdUserIdAsc(userId))
 				.orElse(new ArrayList<>()).stream()
 				.map(basketObj -> DmuBasketDTO.builder().srNo(basketObj.getDmuBasketTempId().getSrNo())
-						.userId(basketObj.getDmuBasketTempId().getUserId()).schemaName(basketObj.getSchemaName())
+						.userId(basketObj.getDmuBasketTempId().getUserId())
+						.schemaName(basketObj.getSchemaName())
+						.requestType(basketObj.getRequestType())
 						.tableName(basketObj.getTableName()).filterCondition(basketObj.getFilterCondition())
 						.targetS3Bucket(basketObj.getTargetS3Bucket()).incrementalFlag(basketObj.getIncrementalFlag())
 						.incrementalClmn(basketObj.getIncrementalClmn())
