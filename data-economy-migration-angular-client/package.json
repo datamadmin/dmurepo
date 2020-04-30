@@ -45,7 +45,7 @@
     "highcharts-3d": "^0.1.7",
     "highcharts-more": "^0.1.7",
     "inputmask": "^3.3.11",
-    "jquery": "^3.4.1",
+    "jquery": "^3.5.0",
     "metismenujs": "^1.0.3",
     "ng-apexcharts": "^1.0.5",
     "ng-click-outside": "^4.0.0",
